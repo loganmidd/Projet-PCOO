@@ -9,7 +9,6 @@ public class Block {
     private float y; // of block
     private float height;
     private float length;
-    private World world;
     
     public Block(float x, float y, float height, float length) {
         this.x = x;
@@ -26,13 +25,11 @@ public class Block {
     public float getY()      { return this.y; }
     public float getHeight() { return this.height; }
     public float getLength() { return this.length; }
-    public World getWorld()  { return this.world; }
 
     public void setX(float x)           { this.x = x; }
     public void setY(float y)           { this.y = y; }
     public void setHeight(float height) { this.height = height; }
     public void setLength(float length) { this.length = length; }
-    public void setWorld(World world)   { this.world = world; }
 
 ///////////////////////////////////////////////////////////
 ///                        Logic                        ///
@@ -43,7 +40,9 @@ public class Block {
     }
 
     public void render() {
-        ShapeRenderer sh = this.world.getShapeRenderer();
+        World instance = World.getWorld();
+        ShapeRenderer sh = instance.getShapeRenderer();
+        sh.setProjectionMatrix(instance.getCamera().combined);
         sh.begin(ShapeType.Filled);
         sh.setColor(0, 1, 1, 1);
         sh.rect(this.x, this.y, this.length, this.height);

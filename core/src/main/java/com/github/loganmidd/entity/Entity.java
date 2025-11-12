@@ -3,9 +3,8 @@ package com.github.loganmidd.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
+import com.github.loganmidd.imageutils.TextureRenderer;
 import com.github.loganmidd.structures.Block;
 import com.github.loganmidd.world.World;
 
@@ -15,11 +14,13 @@ public abstract class Entity {
     private float dx;
     private float dy;
     private float width;
-    private World world;
+    private float height;
+    private TextureRenderer renderer;
 
     
     public Entity(float x, float y) {
-        this.width = 50f;
+        this.width = 50f;  // Arbitrary but
+        this.height = 50f; // default value
         this.x = x;
         this.y = y;
         this.dx = 0;
@@ -30,19 +31,38 @@ public abstract class Entity {
 ///                 Getters && Setters                  ///
 ///////////////////////////////////////////////////////////
 
-    public float getX()  { return x; }
-    public float getY()  { return y; }
-    public float getDx() { return dx; }
-    public float getDy() { return dy; }
-    public World getWorld() {return this.world; } 
-    public float getWidth() { return this.width; }
+    public float getX()      { return x; }
+    public float getY()      { return y; }
+    public float getDx()     { return dx; }
+    public float getDy()     { return dy; } 
+    public float getWidth()  { return this.width; }
+    public float getHeight() { return this.height; }
+    public TextureRenderer getTextureRenderer() { return this.renderer; }
     
-    public void setX(float x)   { this.x = x; }
-    public void setY(float y)   { this.y = y; }
-    public void setDx(float dx) { this.dx = dx; }
-    public void setDy(float dy) { this.dy = dy; }
-    public void setWorld(World world) { this.world = world; }
-    public void setWidth(float width) { this.width = width; }
+    public void setX(float x)           { this.x = x; }
+    public void setY(float y)           { this.y = y; }
+    public void setDx(float dx)         { this.dx = dx; }
+    public void setDy(float dy)         { this.dy = dy; }
+    
+    public void setWidth(float width)   { 
+        this.width = width; 
+        if (this.renderer != null) {
+            this.renderer.setWidth((int) width);
+        }
+    }
+
+    public void setHeight(float height) { 
+        this.height = height; 
+        if (this.renderer != null) {
+            this.renderer.setHeight((int) height);
+        }
+    }
+
+    public void setRenderer(TextureRenderer textureRenderer) {
+        this.renderer = textureRenderer;
+        this.renderer.setHeight((int) this.getHeight());
+        this.renderer.setWidth((int) this.getWidth());
+    }
 
     public void addDx(float dx) { this.dx += dx; }
     public void addDy(float dy) { this.dy += dy; }
@@ -54,14 +74,16 @@ public abstract class Entity {
     public void logic() {
 
         // In case of collision with Block
-        for (Block block : this.collision(this.world.getBlocks())) {
+        List<Block> blocks = this.collision(World.getWorld().getBlocks());
+        while (!blocks.isEmpty()) {
+            Block block = blocks.get(0);
             float blockX = block.getX();
             float blockY = block.getY();
             float blockH = block.getHeight();
             float blockL = block.getLength();
             
             // Collision on the side
-            if (blockY - this.width < this.y && this.y < blockY + blockH) {
+            if (blockY - this.height < this.y && this.y < blockY + blockH) {
                 
                 // If the entity if moving to the right
                 if (this.dx > 0) {
@@ -82,16 +104,16 @@ public abstract class Entity {
                 } 
                 // The entity is moving upwards 
                 else {
-                    this.y = blockY - this.width;
+                    this.y = blockY - this.height;
                     this.dy = 0;
                 }
             }
+            blocks = this.collision(World.getWorld().getBlocks());
         }
         
         // Movement
         this.x += this.dx;
         this.y += this.dy;
-        
         this.dx *= 0.05f;
         this.dy *= 0.05f;
         
@@ -99,7 +121,7 @@ public abstract class Entity {
 
     public List<Block> collision(List<Block> blocks) {
         List<Block> collisions = new ArrayList<>();
-        Rectangle rec = new Rectangle(this.x + this.dx, this.y + this.dy, this.width, this.width);
+        Rectangle rec = new Rectangle(this.x + this.dx, this.y + this.dy, this.width, this.height);
         
         for (Block block : blocks) {
             // To use Rectangle.overlaps() method from LibGDX
@@ -120,13 +142,7 @@ public abstract class Entity {
     public abstract void input(); // The user should not be able to modify an entity on input generally
 
     public void render() {
-        // Render yellow square if the entity hasn't implemented the method
-        ShapeRenderer sh = this.world.getShapeRenderer();
-        sh.setProjectionMatrix(this.world.getCamera().combined);
-        sh.begin(ShapeType.Filled);
-        sh.setColor(1, 1, 0, 1);
-        sh.rect(this.x, this.y, this.width, this.width);
-        sh.end();
+        this.renderer.renderAt(x, y);
     }
 
 }
