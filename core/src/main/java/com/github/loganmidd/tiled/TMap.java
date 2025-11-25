@@ -2,15 +2,18 @@ package com.github.loganmidd.tiled;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-
+import com.badlogic.gdx.math.Rectangle;
 import com.github.loganmidd.structures.Block;
+import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
 public class TMap {
@@ -18,6 +21,10 @@ public class TMap {
     private TiledMap map;
     private TMapRenderer renderer;
     private List<Block> blocks;
+
+    private Point playerSpawnPoint;
+    private List<Point> crystalSpawnPoints;
+    private List<Point> enemySpawnPoints;
 
     public TMap(String filePath, OrthographicCamera cam) {
         init(filePath, cam); // To be able to re-initialize later
@@ -27,51 +34,94 @@ public class TMap {
         this.path = filePath;
         this.map = new TmxMapLoader().load(filePath);
         this.renderer = new TMapRenderer(map, cam);
-        this.blocks = new ArrayList<>();
+        this.blocks = new ArrayList<>();  
 
-        TiledMapTileLayer firstLayer = (TiledMapTileLayer) map.getLayers().get(0);
+        this.crystalSpawnPoints = new ArrayList<>();
+        this.enemySpawnPoints = new ArrayList<>();
+        this.loadTraversabilityWalls();
+        this.loadSpawnPoints();
+    }
+
+    private void loadTraversabilityWalls() {
+        TiledMapTileLayer firstLayer = TMapUtils.getFirstTileLayer(this.map);
         int width = firstLayer.getTileWidth();
         int height = firstLayer.getTileHeight();
+        // Tile Layers
         for (int x=0; x<firstLayer.getWidth(); x++) {
             for (int y=0; y<firstLayer.getHeight(); y++) {
-                if (!this.getTraversability(x, y)) {
-                    float[] coords = this.getCoordinatesOfTile(x, y);
+                if (!TMapUtils.getTraversability(this.map, x, y)) {
+                    Point point = this.getCoordinatesOfTile(x, y);
                     float unitScale = this.renderer.getUnitScale();
-                    Block b = new Block(coords[0], coords[1], unitScale*height, unitScale*width);
+                    Block b = new Block(point.getX(), point.getY(), unitScale*height, unitScale*width);
                     this.blocks.add(b);
                     World.getWorld().addBlock(b);
                 }
             }
         }
-    }
+        // Object Layers
+        for (MapLayer layer : TMapUtils.getMapLayersWithProperty(this.map.getLayers(), "isTraversable")) {
+            if (!((boolean) layer.getProperties().get("isTraversable"))) {
+                for (MapObject obj : layer.getObjects()) {
+                    if (obj.getClass().equals(RectangleMapObject.class)) {
+                        Rectangle rec = ((RectangleMapObject) obj).getRectangle();
+                        float unitScale = this.renderer.getUnitScale();
+                        Block block = new Block(rec.getX()*unitScale, rec.getY()*unitScale, rec.getHeight()*unitScale, rec.getWidth()*unitScale);
+                        
+                        if (layer.getProperties().containsKey("hasTrueCollision")) {
+                            block.setTrueCollision((boolean) layer.getProperties().get("hasTrueCollision"));
+                        }
 
-    public boolean getTraversability(int x, int y) {
-        MapLayers layers = this.map.getLayers();
-        for (int index=layers.getCount()-1; index>=0; index--) {
-            TiledMapTileLayer tLayer = (TiledMapTileLayer) layers.get(index);
-            Cell cell = tLayer.getCell(x, y);
-            if (cell != null) {
-                Object state = tLayer.getProperties().get("isTraversable");
-                if (state == null) { // If the property "isTraversable" is undefined
-                    continue;        // Ignore layer
-                } else {
-                    return (boolean) state;
+                        this.blocks.add(block);
+                        World.getWorld().addBlock(block);
+                    }
                 }
             }
         }
-        return false;
     }
 
-    public float[] getCoordinatesOfTile(int x, int y) {
+    private void loadSpawnPoints() {
+        float unitScale = this.renderer.getUnitScale();
+        MapLayers layers = this.map.getLayers();
+        for (MapLayer layer : TMapUtils.flattenTiledMapLayers(layers)) {
+            MapProperties props = layer.getProperties();
+            
+            if (props.containsKey("spawn")) {
+                for (MapObject obj : layer.getObjects()) {
+                    if (obj.getClass().equals(RectangleMapObject.class)) {
+                        RectangleMapObject rectObj = (RectangleMapObject) obj;
+                        float x = rectObj.getRectangle().getX() * unitScale;
+                        float y = rectObj.getRectangle().getY() * unitScale;
+
+                        switch (rectObj.getName()) {
+                            case "player":
+                                this.playerSpawnPoint = new Point(x, y);
+                                break;
+                            case "crystal":
+                                this.crystalSpawnPoints.add(new Point(x,y));
+                                break;
+                            case "enemy":
+                                this.enemySpawnPoints.add(new Point(x,y));
+                                break;
+                        }
+
+                    }
+                }
+
+            }
+        }
+    }
+
+    public Point getCoordinatesOfTile(int x, int y) {
         float topRightX = this.renderer.getTopLeftCornerX();
         float topRightY = this.renderer.getTopLeftCornerY();
         float unitScale = this.renderer.getUnitScale();
-        TiledMapTileLayer firstLayer = (TiledMapTileLayer) map.getLayers().get(0);
-        float[] coords =  {
+        TiledMapTileLayer firstLayer = TMapUtils.getFirstTileLayer(this.map);
+        
+        Point point = new Point (
             topRightX + unitScale*x*firstLayer.getTileWidth(),
             topRightY + unitScale*y*firstLayer.getTileHeight()
-        };
-        return coords;
+        );
+        return point;
     } 
 
     public void render() {
@@ -81,4 +131,21 @@ public class TMap {
     public String getPath() {
         return this.path;
     }
+
+    public Point getPlayerSpawnPoint() {
+        return playerSpawnPoint;
+    }
+
+    public List<Point> getCrystalSpawnPoints() {
+        return crystalSpawnPoints;
+    }
+
+    public List<Point> getEnemySpawnPoints() {
+        return enemySpawnPoints;
+    }
+
+    public void dispose() {
+        this.renderer.dispose();
+    }
+    
 }

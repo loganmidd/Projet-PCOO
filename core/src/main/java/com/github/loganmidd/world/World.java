@@ -8,10 +8,13 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.github.loganmidd.entity.Crystal;
 import com.github.loganmidd.entity.Entity;
-import com.github.loganmidd.imageutils.TextureRenderer;
+import com.github.loganmidd.entity.Player;
 import com.github.loganmidd.structures.Block;
 import com.github.loganmidd.tiled.TMap;
+import com.github.loganmidd.utils.Point;
+import com.github.loganmidd.utils.TextureRenderer;
 
 public final class World {
     private List<Block> blocks;
@@ -49,13 +52,13 @@ public final class World {
 ///                 Getters && Setters (etc)            ///
 ///////////////////////////////////////////////////////////
 
-    public List<Block> getBlocks()          { return this.blocks; }
-    public List<Entity> getEntities()       { return this.entities; }
-    public Camera getCamera()               { return this.camera; }
+    public List<Block>   getBlocks()        { return this.blocks; }
+    public List<Entity>  getEntities()      { return this.entities; }
+    public Camera        getCamera()        { return this.camera; }
     public ShapeRenderer getShapeRenderer() { return this.shapeRenderer; }
-    public SpriteBatch getSpriteBatch()     { return this.spriteBatch; }
-    public TMap getTMap()                   { return this.tMap; }
-    public void addBlock(Block block) { 
+    public SpriteBatch   getSpriteBatch()   { return this.spriteBatch; }
+    public TMap          getTMap()          { return this.tMap; }
+    public void          addBlock(Block block) { 
         blocks.add(block);
     }
     public void addEntity(Entity entity, String pathToTexture) { 
@@ -98,26 +101,22 @@ public final class World {
     }
 
     public void render() {
-
         this.camera.update();
         this.spriteBatch.setProjectionMatrix(this.camera.combined);
-        // Uses Shaperenderer
-        // Blocks should render "under" map
-        for (Block block : this.blocks) {
-            block.render();
-        }
         this.tMap.render();
-        // Uses textures
+    }
+
+    public void renderEntities() {
         this.spriteBatch.begin();
         for (Entity entity : this.entities) {
             entity.render();
         }
         this.spriteBatch.end();
-        
     }
     
     public void dispose() {
         this.spriteBatch.dispose();
+        this.tMap.dispose();
     }
 
     public void resize(int width, int height) {
@@ -127,8 +126,13 @@ public final class World {
     }
 
     public void loadTiledMap(String filePath) {
-        filePath = "/home/Partage/L2/PCOO/projet/tiled/minimal.tmx"; // Testing purposes
         this.tMap = new TMap(filePath, camera); 
+        this.addEntity(new Player(this.tMap.getPlayerSpawnPoint()), "pitrouille.png");
+
+        for (Point point : this.tMap.getCrystalSpawnPoints()) {
+            this.addEntity(new Crystal(point), "spriteNotFound.png");
+        }
+
     }
     
 }

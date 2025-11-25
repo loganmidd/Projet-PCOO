@@ -1,4 +1,4 @@
-package com.github.loganmidd.imageutils;
+package com.github.loganmidd.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;

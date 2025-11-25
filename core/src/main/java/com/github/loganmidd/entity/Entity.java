@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.github.loganmidd.imageutils.TextureRenderer;
 import com.github.loganmidd.structures.Block;
+import com.github.loganmidd.utils.Point;
+import com.github.loganmidd.utils.TextureRenderer;
 import com.github.loganmidd.world.World;
 
 public abstract class Entity {
@@ -15,6 +16,7 @@ public abstract class Entity {
     private float dy;
     private float width;
     private float height;
+    private float collisionHeightFactor;
     private TextureRenderer renderer;
 
     
@@ -25,6 +27,11 @@ public abstract class Entity {
         this.y = y;
         this.dx = 0;
         this.dy = 0;
+        this.collisionHeightFactor = 1f/3f;
+    }
+
+    public Entity(Point p) {
+        this(p.getX(), p.getY());
     }
 
 ///////////////////////////////////////////////////////////
@@ -72,18 +79,19 @@ public abstract class Entity {
 ///////////////////////////////////////////////////////////
 
     public void logic() {
-
         // In case of collision with Block
         List<Block> blocks = this.collision(World.getWorld().getBlocks());
-        while (!blocks.isEmpty()) {
+        int tries = 0;
+        int maxTries = 100;
+        while (!blocks.isEmpty() && tries++ < maxTries) {
             Block block = blocks.get(0);
             float blockX = block.getX();
             float blockY = block.getY();
             float blockH = block.getHeight();
             float blockL = block.getLength();
-            
+            float collisionHeight = this.getCollisionHeightForBlock(block);
             // Collision on the side
-            if (blockY - this.height < this.y && this.y < blockY + blockH) {
+            if (blockY - collisionHeight < this.y && this.y < blockY + blockH) {
                 
                 // If the entity if moving to the right
                 if (this.dx > 0) {
@@ -104,27 +112,31 @@ public abstract class Entity {
                 } 
                 // The entity is moving upwards 
                 else {
-                    this.y = blockY - this.height;
+                    this.y = blockY - collisionHeight;
                     this.dy = 0;
                 }
             }
             blocks = this.collision(World.getWorld().getBlocks());
         }
         
+        if (tries == maxTries) {
+           //throw new ExceptionInInitializerError("infinite while loop");
+        }
         // Movement
         this.x += this.dx;
         this.y += this.dy;
         this.dx *= 0.05f;
         this.dy *= 0.05f;
-        
     }
 
     public List<Block> collision(List<Block> blocks) {
         List<Block> collisions = new ArrayList<>();
-        Rectangle rec = new Rectangle(this.x + this.dx, this.y + this.dy, this.width, this.height);
+        Rectangle rec = new Rectangle(this.x + this.dx, this.y + this.dy, this.width, 0);
         
         for (Block block : blocks) {
-            // To use Rectangle.overlaps() method from LibGDX
+            // To use Rectangle.overlaps() method from LibGDX   
+            float collisionHeight = this.getCollisionHeightForBlock(block);
+            rec.setHeight(collisionHeight);
             float blockX = block.getX();
             float blockY = block.getY();
             float blockWidth = block.getLength();
@@ -140,6 +152,15 @@ public abstract class Entity {
     }
 
     public abstract void input(); // The user should not be able to modify an entity on input generally
+
+    private float getCollisionHeightForBlock(Block block) {
+        if (block.hasTrueCollision()) {
+            return this.height;
+        } else {
+            return this.height * this.collisionHeightFactor;
+        }
+    }
+
 
     public void render() {
         this.renderer.renderAt(x, y);

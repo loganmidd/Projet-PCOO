@@ -2,6 +2,7 @@ package com.github.loganmidd.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.github.loganmidd.utils.Point;
 
 public class Player extends Entity {
 
@@ -10,6 +11,10 @@ public class Player extends Entity {
         this.setWidth(128);
         this.setHeight(128);
     }
+
+    public Player(Point p) {
+        this(p.getX(), p.getY());
+    } 
 
     public void input() {
         float a = 6f; // Arbitrary
