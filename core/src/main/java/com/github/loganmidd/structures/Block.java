@@ -2,6 +2,7 @@ package com.github.loganmidd.structures;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Rectangle;
 import com.github.loganmidd.world.World;
 
 public class Block {
@@ -18,6 +19,10 @@ public class Block {
         this.length = length;
         this.trueCollision = false; // By default
     }
+
+    public Block(Rectangle r) {
+        this(r.getX(), r.getY(), r.getHeight(), r.getWidth());
+    } 
 
 ///////////////////////////////////////////////////////////
 ///                 Getters && Setters                  ///

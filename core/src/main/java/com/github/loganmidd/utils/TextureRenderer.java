@@ -29,8 +29,9 @@ public class TextureRenderer {
 
     public int getHeight()              { return this.height; }
     public int getWidth()               { return this.width; }
-    public String getPath()             { return path; }
-    public SpriteBatch getSpriteBatch() { return spriteBatch; }
+    public String getPath()             { return this.path; }
+    public SpriteBatch getSpriteBatch() { return this.spriteBatch; }
+    public Texture getTexture()         { return this.texture; }
 
     public void setPath(String path)                    { 
         this.path = path; 
