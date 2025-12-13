@@ -7,10 +7,13 @@ import com.github.loganmidd.entity.Entity;
 import com.github.loganmidd.world.World;
 
 public abstract class Projectile extends Entity {
+    private int t; // Used for getting position of projectile in parametric curve
+
     public Projectile(float x, float y, float angle, float dr) {
         super(x, y);
         this.setCenterX(x);
         this.setCenterY(y);
+        this.t = 0;
         this.setCollision(false);
         this.setSlowDownFactor(1);
         // Using polar coordinates to get direction
@@ -37,7 +40,20 @@ public abstract class Projectile extends Entity {
                 return;
             }
         }
+        this.setX(this.calculateX(t));
+        this.setY(this.calculateY(t));
+        t++;
     }
+    
+    // Used to calculate (x, y) coordinates of projectile at
+    // an instant t. Override to code parametric, non linear curves
+    protected float calculateX(int t) {
+        return this.getX();
+    } 
+    protected float calculateY(int t) {
+        return this.getY();
+    }
+
 
     public boolean isEnemy() {
         return false;

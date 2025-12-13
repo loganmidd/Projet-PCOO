@@ -13,6 +13,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Rectangle;
 import com.github.loganmidd.structures.Block;
+import com.github.loganmidd.utils.MapPoint;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
@@ -21,10 +22,12 @@ public class TMap {
     private TiledMap map;
     private TMapRenderer renderer;
     private List<Block> blocks;
+    private List<MapPoint> traversableCases;
 
     private Point playerSpawnPoint;
     private List<Point> crystalSpawnPoints;
     private List<Point> enemySpawnPoints;
+    private List<Point> enemyPathPoints;
 
     public TMap(String filePath, OrthographicCamera cam) {
         init(filePath, cam); // To be able to re-initialize later
@@ -35,11 +38,15 @@ public class TMap {
         this.map = new TmxMapLoader().load(filePath);
         this.renderer = new TMapRenderer(map, cam);
         this.blocks = new ArrayList<>();  
+        this.traversableCases = new ArrayList<>();
+
 
         this.crystalSpawnPoints = new ArrayList<>();
         this.enemySpawnPoints = new ArrayList<>();
+        this.enemyPathPoints = new ArrayList<>();
         this.loadTraversabilityWalls();
         this.loadSpawnPoints();
+        this.loadEnemyPathPoints();
     }
 
     private void loadTraversabilityWalls() {
@@ -55,6 +62,8 @@ public class TMap {
                     Block b = new Block(point.getX(), point.getY(), unitScale*height, unitScale*width);
                     this.blocks.add(b);
                     World.getWorld().addBlock(b);
+                } else {
+                    this.traversableCases.add(new MapPoint(x, y));
                 }
             }
         }
@@ -111,6 +120,19 @@ public class TMap {
         }
     }
 
+    private void loadEnemyPathPoints() {
+        for (MapLayer layer : TMapUtils.getMapLayersWithProperty(this.map.getLayers(), "enemypath")) {
+            for (MapObject obj : layer.getObjects()) {
+                if (obj.getClass().equals(RectangleMapObject.class)) {
+                        Rectangle rec = ((RectangleMapObject) obj).getRectangle();
+                        float unitScale = this.renderer.getUnitScale();
+                        Point point = new Point(rec.getX() * unitScale, rec.getY() * unitScale);
+                        this.enemyPathPoints.add(point);
+                }
+            }
+        }
+    }
+
     public Point getCoordinatesOfTile(int x, int y) {
         float topRightX = this.renderer.getTopLeftCornerX();
         float topRightY = this.renderer.getTopLeftCornerY();
@@ -124,6 +146,7 @@ public class TMap {
         return point;
     } 
 
+
     public void render() {
         this.renderer.render();
     }
@@ -133,15 +156,23 @@ public class TMap {
     }
 
     public Point getPlayerSpawnPoint() {
-        return playerSpawnPoint;
+        return this.playerSpawnPoint;
     }
 
     public List<Point> getCrystalSpawnPoints() {
-        return crystalSpawnPoints;
+        return this.crystalSpawnPoints;
     }
 
     public List<Point> getEnemySpawnPoints() {
-        return enemySpawnPoints;
+        return this.enemySpawnPoints;
+    }
+
+    public List<MapPoint> getTraversableCases() {
+        return this.traversableCases;
+    }
+
+    public List<Point> getEnemyPathPoints() {
+        return this.enemyPathPoints;
     }
 
     public void dispose() {

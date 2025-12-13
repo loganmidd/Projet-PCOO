@@ -3,6 +3,7 @@ package com.github.loganmidd.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.github.loganmidd.world.World;
 
 public class TextureRenderer {
     private String path;
@@ -10,6 +11,11 @@ public class TextureRenderer {
     private int width;
     private int height;
     private Texture texture;
+    private float rotation;
+    private float rotationX;
+    private float rotationY;
+    private boolean flipX;
+    private boolean flipY;
 
     public TextureRenderer(SpriteBatch spriteBatch) {
         this("spriteNotFound.png", spriteBatch);
@@ -25,6 +31,11 @@ public class TextureRenderer {
         this.width = width;
         this.height = height;
         this.texture = new Texture(Gdx.files.internal(path));
+        this.rotation = 0;
+        this.flipX = false;
+        this.flipY = false;
+        this.rotationX = this.width/2f;  
+        this.rotationY = this.height/2f; 
     }
 
     public int getHeight()              { return this.height; }
@@ -32,6 +43,11 @@ public class TextureRenderer {
     public String getPath()             { return this.path; }
     public SpriteBatch getSpriteBatch() { return this.spriteBatch; }
     public Texture getTexture()         { return this.texture; }
+    public float getRotation()          { return this.rotation; }
+    public boolean getFlipX()           { return this.flipX; }
+    public boolean getFlipY()           { return this.flipY; }
+    public float getRotationX()         { return this.rotationX; }
+    public float getRotationY()         { return this.rotationY; }
 
     public void setPath(String path)                    { 
         this.path = path; 
@@ -40,9 +56,32 @@ public class TextureRenderer {
     public void setSpriteBatch(SpriteBatch spriteBatch) { this.spriteBatch = spriteBatch; }
     public void setHeight(int height)                   { this.height = height; }
     public void setWidth(int width)                     { this.width = width; }
-
+    public void setRotation(float rotation)             { this.rotation = rotation;     }
+    public void setFlipX(boolean flip)                  { this.flipX = flip; }
+    public void setFlipY(boolean flip)                  { this.flipY = flip; }
+    public void setRotationX(float x)                   { this.rotationX = x; }
+    public void setRotationY(float y)                   { this.rotationY = y; }
+ 
     public void renderAt(float x, float y) {
-        this.spriteBatch.draw(this.texture, x, y, this.width, this.height);
+        this.spriteBatch.draw(
+            this.texture, 
+            x,
+            y + 4*(float) Math.sin((float)Math.PI*2f*(float) World.getWorld().getFrameNumber()/120f),
+            this.rotationX,
+            this.rotationY,
+            this.width, 
+            this.height, 
+            1f,     // Scale x
+            1f,     // Scale y
+            this.rotation,
+            0,          // srcX (texels)
+            0,          // srcY (texels)
+            this.texture.getWidth(),    // srcWidth (texels)
+            this.texture.getHeight(),   // srcHeight (texels)
+            this.flipX,
+            this.flipY
+        );
+        
     }
 
     
