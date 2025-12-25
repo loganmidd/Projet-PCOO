@@ -1,18 +1,22 @@
 package com.github.loganmidd.entity.enemies;
 
+import com.github.loganmidd.entity.Combattant;
 import com.github.loganmidd.entity.Entity;
-import com.github.loganmidd.entity.Player;
+import com.github.loganmidd.utils.CooldownTimer;
 import com.github.loganmidd.utils.EnemyPathVertex;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
-public abstract class Enemy extends Entity {
+public abstract class Enemy extends Combattant {
     private EnemyPathVertex currentNode;
     private float speed;
+    private CooldownTimer attackTimer; 
+
     public Enemy(float x, float y) {
         super(x, y);
         this.speed = 3f; // Default
         this.currentNode = World.getWorld().getEnemyPaths().getClosestVertex(this.getCenterPoint());
+        this.attackTimer = new CooldownTimer(1000);
     }
 
     public void logic() {
@@ -21,14 +25,26 @@ public abstract class Enemy extends Entity {
         float maxDistance = 200;
         float bestDistance = maxDistance;
         for (Entity e : World.getWorld().getEntities()) {
-            if (e.getClass().equals(Player.class)) {
-                float distance = e.getCenterPoint().distanceTo(this.getCenterPoint());
-                if (bestDistance > distance) {
-                    this.currentNode = new EnemyPathVertex(e.getCenterPoint(), null, false);
-                    bestDistance = distance;
+            if (e.isCombattant() && !e.isEnemy()) {
+                Combattant combattant = (Combattant) e;
+                if (combattant.isTargetable()) {
+                    float distance = e.getCenterPoint().distanceTo(this.getCenterPoint());
+                    if (bestDistance > distance) {
+                        this.currentNode = new EnemyPathVertex(e.getCenterPoint(), null, false);
+                        this.currentNode.setTargetCombattant((Combattant) e);
+                        bestDistance = distance;
+                    }
                 }
             } 
         }
+        // If close enough, attack
+        if (bestDistance < 100 && this.attackTimer.isCooldownOver()) {
+            Combattant combattant = this.currentNode.getTargetCombattant();
+            combattant.takeDamage(this);
+            this.attackTimer.resetCooldown();
+        }
+
+        // If following an entity
         if (maxDistance - bestDistance < 0.1  && this.currentNode.isEntityNode() && !this.currentNode.isCrystal()) {
             this.currentNode = World.getWorld().getEnemyPaths().getClosestVertex(this.getCenterPoint());
         }
@@ -41,7 +57,8 @@ public abstract class Enemy extends Entity {
         float x = p.getX();
         float y = p.getY();
         float angle = (float) Math.atan2(this.getCenterY() - y, this.getCenterX() - x);
-        float dr = Math.min(this.speed, this.getCenterPoint().distanceTo(this.currentNode.getPoint()));
+        float distance = this.getCenterPoint().distanceTo(this.currentNode.getPoint());
+        float dr = Math.min(this.speed, distance);
         this.setDx((float) (-dr * Math.cos(angle)));
         this.setDy((float) (-dr * Math.sin(angle))); 
     }

@@ -3,6 +3,9 @@ package com.github.loganmidd.entity.playertypes;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.github.loganmidd.entity.Entity;
 import com.github.loganmidd.entity.projectiles.WizardProjectile;
+import com.github.loganmidd.entity.towers.DeadlyStrikeTower;
+import com.github.loganmidd.entity.towers.Tower;
+import com.github.loganmidd.entity.towers.WizardBlueTower;
 import com.github.loganmidd.world.World;
 
 public class Wizard implements PlayerType {
@@ -49,6 +52,15 @@ public class Wizard implements PlayerType {
 
     public String getTexturePath () {
         return "wizard.png";
+    }
+
+    public Tower getPrimaryTower() {
+        return new WizardBlueTower(0, 0);
+    }
+
+    public Tower getSecondaryTower() {
+        return new DeadlyStrikeTower(0, 0);
+
     }
 
 }

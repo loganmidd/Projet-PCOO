@@ -28,7 +28,9 @@ public class TMapEnemyPaths {
         this.nodes = new HashSet<>();
         HashSet<Point> points = new HashSet<>(); // Points of placed points
         for (Crystal crystal : this.crystals) {
-            this.nodes.add(new EnemyPathVertex(crystal.getCenterPoint(), null, true));
+            EnemyPathVertex vertex = new EnemyPathVertex(crystal.getCenterPoint(), null, true);
+            vertex.setTargetCombattant(crystal);
+            this.nodes.add(vertex);
             points.add(crystal.getCenterPoint());
         }
         // This algorithm will build all the paths, point by point

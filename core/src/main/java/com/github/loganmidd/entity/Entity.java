@@ -49,11 +49,10 @@ public abstract class Entity {
     public float getDy()     { return dy; } 
     public float getWidth()  { return this.width; }
     public float getHeight() { return this.height; }
-    public TextureRenderer getTextureRenderer() { return this.renderer; }
     public boolean hasCollision()    { return this.hasCollision; }
     public float getSlowDownFactor() { return this.slowDownFactor; }
     public abstract String getTexturePath();
-    public abstract boolean isEnemy();
+    
     public float getCenterX() { return this.x + (this.width /2); }
     public float getCenterY() { return this.y + (this.height/2); }
     public Point getPoint()   { return new Point(this.x, this.y); }
@@ -62,6 +61,21 @@ public abstract class Entity {
     public Rectangle getNextHitbox() { return new Rectangle(this.x - Math.abs(this.dx), this.y - Math.abs(this.dy), this.getWidth() + Math.abs(this.dx), this.getHeight() + Math.abs(this.dy)); }
     public boolean isDisposed() { return this.isDisposed; }
     public boolean isMovable() { return this.isMovable; }
+    public boolean isCombattant() { return false; }
+    public boolean isPlayer() { return false; }
+    public boolean isTower() { return false; }
+    public boolean isEnemy() { return false;}
+
+
+
+    public TextureRenderer getTextureRenderer() { 
+        if (this.renderer == null) {
+            TextureRenderer t = new TextureRenderer(World.getWorld().getSpriteBatch());
+            t.setPath(this.getTexturePath());
+            this.setRenderer(t);
+        }         
+        return this.renderer;
+    }
 
     public void setX(float x)   { this.x = x; }
     public void setY(float y)   { this.y = y; }
@@ -300,7 +314,7 @@ public abstract class Entity {
 
     public void render() {
         if (!this.isDisposed) {
-            this.renderer.renderAt(x, y);
+            this.getTextureRenderer().renderAt(x, y);
         }
     }
 

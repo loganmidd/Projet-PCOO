@@ -2,6 +2,9 @@ package com.github.loganmidd.entity.playertypes;
 
 import com.github.loganmidd.entity.Entity;
 import com.github.loganmidd.entity.projectiles.KnightSword;
+import com.github.loganmidd.entity.towers.HarpoonTower;
+import com.github.loganmidd.entity.towers.KnightWall;
+import com.github.loganmidd.entity.towers.Tower;
 import com.github.loganmidd.world.World;
 
 public class Knight implements PlayerType {
@@ -10,7 +13,7 @@ public class Knight implements PlayerType {
 
     public Knight(Entity host) {
         this.host = host;
-        float factor = 3f;
+        float factor = 2.5f;
         this.host.setHeight(factor*44);
         this.host.setWidth(factor*48);
     }
@@ -30,6 +33,14 @@ public class Knight implements PlayerType {
 
     public void endSecondaryAttack() {
         // SHIELD DOWN
+    }
+
+    public Tower getPrimaryTower() {
+        return new KnightWall(0, 0);
+    }
+
+    public Tower getSecondaryTower() {
+        return new HarpoonTower(0, 0);
     }
 
 

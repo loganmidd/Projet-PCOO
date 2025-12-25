@@ -1,14 +1,18 @@
 package com.github.loganmidd.utils;
 
+import com.github.loganmidd.entity.Combattant;
+
 public class EnemyPathVertex {
     private Point point;
     private EnemyPathVertex next;
     private boolean isCrystal;
+    private Combattant target;
 
     public EnemyPathVertex(Point p, EnemyPathVertex next, boolean isCrystal) {
         this.point = p;
         this.next = next;
         this.isCrystal = isCrystal;
+        this.target = null;
     }
 
     public EnemyPathVertex(Point p, EnemyPathVertex next) {
@@ -45,6 +49,14 @@ public class EnemyPathVertex {
 
     public void setCrystal(boolean isCrystal) {
         this.isCrystal = isCrystal;
+    }
+
+    public void setTargetCombattant(Combattant combattant) {
+        this.target = combattant;
+    }
+
+    public Combattant getTargetCombattant() {
+        return this.target;
     }
 
 }

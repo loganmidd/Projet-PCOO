@@ -4,24 +4,26 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.github.loganmidd.defenders.controllers.TowerPlacer;
 import com.github.loganmidd.entity.enemies.Goblin;
 import com.github.loganmidd.entity.playertypes.Knight;
 import com.github.loganmidd.entity.playertypes.PlayerType;
-import com.github.loganmidd.entity.playertypes.Wizard;
-import com.github.loganmidd.entity.towers.WizardBlueTower;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
-public class Player extends Entity {
+public class Player extends Combattant {
     private PlayerType type;
     private boolean isSecondaryCharging;
+
+    private TowerPlacer placer;
 
     public Player(float x, float y) {
         super(x, y); // (x, y) coordinates for bottom-left corner of hitbox
         this.setWidth(128);
         this.setHeight(128);
-        this.type = new Wizard(this);
+        this.type = new Knight(this);
         this.isSecondaryCharging = false;
+        this.setImmortal(true);
     }
 
     public Player(Point p) {
@@ -32,8 +34,8 @@ public class Player extends Entity {
         return this.type.getTexturePath();
     }
 
-    public boolean isEnemy() {
-        return false;
+    public boolean isPlayer() {
+        return true;
     }
 
 
@@ -66,11 +68,14 @@ public class Player extends Entity {
             for (Point point : points) {
                 World.getWorld().addEntity(new Goblin(point.getX(), point.getY()));
             }
-            
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
-            World.getWorld().addEntity(new WizardBlueTower(this.getX(), this.getY()));
+            this.placer = new TowerPlacer(this.type.getPrimaryTower());
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+            this.placer = new TowerPlacer(this.type.getSecondaryTower());
         }
 
 
@@ -88,10 +93,18 @@ public class Player extends Entity {
             this.type.endSecondaryAttack();
         }
 
+        if (this.placer != null) {
+            this.placer.logic();
+        }
+
     }
 
     public void render() {
         super.render();
+
+        if (this.placer != null) {
+            this.placer.render();
+        }
     }
     
 }

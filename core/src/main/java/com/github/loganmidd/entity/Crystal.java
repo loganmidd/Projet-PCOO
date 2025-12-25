@@ -2,14 +2,14 @@ package com.github.loganmidd.entity;
 
 import com.github.loganmidd.utils.Point;
 
-public class Crystal extends Entity {
+public class Crystal extends Combattant {
     public Crystal(float x, float y) {
         super(x, y);
         this.setMovable(false);
-    }
-
-    public boolean isEnemy() {
-        return false;
+        
+        this.setMaxHealth(200);
+        this.setCurrentHealth(200);
+        this.setAttackDamage(0);
     }
 
     public Crystal(Point point) {

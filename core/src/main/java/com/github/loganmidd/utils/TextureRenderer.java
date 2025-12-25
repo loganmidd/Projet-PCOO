@@ -1,6 +1,7 @@
 package com.github.loganmidd.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.github.loganmidd.world.World;
@@ -16,6 +17,7 @@ public class TextureRenderer {
     private float rotationY;
     private boolean flipX;
     private boolean flipY;
+    private Color tint;
 
     public TextureRenderer(SpriteBatch spriteBatch) {
         this("spriteNotFound.png", spriteBatch);
@@ -36,6 +38,7 @@ public class TextureRenderer {
         this.flipY = false;
         this.rotationX = this.width/2f;  
         this.rotationY = this.height/2f; 
+        this.tint = new Color(1, 1,1, 1);
     }
 
     public int getHeight()              { return this.height; }
@@ -48,6 +51,8 @@ public class TextureRenderer {
     public boolean getFlipY()           { return this.flipY; }
     public float getRotationX()         { return this.rotationX; }
     public float getRotationY()         { return this.rotationY; }
+    public Color getTint()              { return this.tint; }
+    public float getOpacity()           { return this.tint.a; }
 
     public void setPath(String path)                    { 
         this.path = path; 
@@ -61,8 +66,12 @@ public class TextureRenderer {
     public void setFlipY(boolean flip)                  { this.flipY = flip; }
     public void setRotationX(float x)                   { this.rotationX = x; }
     public void setRotationY(float y)                   { this.rotationY = y; }
- 
+    public void setTint(Color color)                    { this.tint = color; }
+    public void setOpacity(float opacity)               { this.tint.a = opacity; }
+
     public void renderAt(float x, float y) {
+        Color baseColor = this.spriteBatch.getColor();
+        this.spriteBatch.setColor(this.tint);
         this.spriteBatch.draw(
             this.texture, 
             x,
@@ -81,7 +90,7 @@ public class TextureRenderer {
             this.flipX,
             this.flipY
         );
-        
+        this.spriteBatch.setColor(baseColor);
     }
 
     

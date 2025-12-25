@@ -16,7 +16,6 @@ import com.github.loganmidd.structures.Block;
 import com.github.loganmidd.tiled.TMap;
 import com.github.loganmidd.tiled.TMapEnemyPaths;
 import com.github.loganmidd.utils.Point;
-import com.github.loganmidd.utils.TextureRenderer;
 
 public final class World {
     private int frameNumber;
@@ -75,9 +74,6 @@ public final class World {
     }
     public void addEntity(Entity entity) { 
         this.entitiesToAdd.add(entity); 
-        TextureRenderer t = new TextureRenderer(this.spriteBatch);
-        t.setPath(entity.getTexturePath());
-        entity.setRenderer(t);
     }
 
     public void removeBlock(Block block)    { this.blocks.remove(block); this.blocksToAdd.remove(block); }

@@ -1,5 +1,6 @@
 package com.github.loganmidd.entity.projectiles;
 
+import com.github.loganmidd.entity.Combattant;
 import com.github.loganmidd.entity.Entity;
 
 public class KnightSword extends Projectile {
@@ -45,9 +46,9 @@ public class KnightSword extends Projectile {
         return y + distanceToHost*((float) Math.sin(this.start + this.current * (float)Math.PI/180));
     }
 
-    public boolean collisionWith(Entity entity) {
-        if (entity.isEnemy()) {
-            entity.dispose();
+    public boolean collisionWith(Combattant combattant) {
+        if (combattant.isEnemy()) {
+            combattant.takeDamage(this);;
             this.dispose();
             return true;
         }

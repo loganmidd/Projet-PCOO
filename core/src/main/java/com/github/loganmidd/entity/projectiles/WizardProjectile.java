@@ -1,6 +1,6 @@
 package com.github.loganmidd.entity.projectiles;
 
-import com.github.loganmidd.entity.Entity;
+import com.github.loganmidd.entity.Combattant;
 
 public class WizardProjectile extends Projectile {
     private float angle;
@@ -21,9 +21,9 @@ public class WizardProjectile extends Projectile {
         return "fireball.png";
     }
 
-    public boolean collisionWith(Entity entity) {
-        if (entity.isEnemy()) {
-            entity.dispose();
+    public boolean collisionWith(Combattant combattant) {
+        if (combattant.isEnemy()) {
+            combattant.takeDamage(this);;
             this.dispose();
             return true;
         }
