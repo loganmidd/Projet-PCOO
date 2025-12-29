@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.github.loganmidd.defenders.controllers.TowerPlacer;
+import com.github.loganmidd.controllers.TowerPlacer;
 import com.github.loganmidd.entity.enemies.Goblin;
 import com.github.loganmidd.entity.playertypes.Knight;
 import com.github.loganmidd.entity.playertypes.PlayerType;
@@ -14,6 +14,7 @@ import com.github.loganmidd.world.World;
 public class Player extends Combattant {
     private PlayerType type;
     private boolean isSecondaryCharging;
+    private int expCount;
 
     private TowerPlacer placer;
 
@@ -24,6 +25,7 @@ public class Player extends Combattant {
         this.type = new Knight(this);
         this.isSecondaryCharging = false;
         this.setImmortal(true);
+        this.expCount = 0;
     }
 
     public Player(Point p) {
@@ -38,6 +40,13 @@ public class Player extends Combattant {
         return true;
     }
 
+    public void addExp(int xp) { this.expCount += xp; }
+    public void setExp(int xp) { this.expCount = xp; }
+    public int getExp()        { return this.expCount; }
+
+    public int getLevel() {
+        return (int) Math.floor(Math.log(this.expCount + 1));
+    }
 
     public void input() {
         if (this.getTextureRenderer().getPath() == "spriteNotFound.png") {

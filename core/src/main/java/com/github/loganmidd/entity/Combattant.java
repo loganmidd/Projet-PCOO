@@ -2,6 +2,7 @@ package com.github.loganmidd.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.github.loganmidd.utils.CooldownTimer;
+import com.github.loganmidd.world.World;
 
 public abstract class Combattant extends Entity {
     private int maxHealth;
@@ -30,6 +31,9 @@ public abstract class Combattant extends Entity {
 
         if (!this.isImmortal) {
             if (damage >= this.getCurrentHealth()) {
+                if (this.isEnemy()) {
+                    World.getWorld().addEntity(new ExpOrb(this.getCenterX(), this.getCenterY()));
+                }
                 this.dispose();
             } else {
                 this.currentHealth -= damage;

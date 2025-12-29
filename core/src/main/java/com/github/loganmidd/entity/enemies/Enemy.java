@@ -74,5 +74,4 @@ public abstract class Enemy extends Combattant {
     public void setSpeed(float speed) {
         this.speed = speed;
     }
-    
 }

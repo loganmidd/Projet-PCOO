@@ -142,9 +142,11 @@ public final class World {
                 return -Float.compare(o1.getY(), o2.getY()); // Sort based on y coordinate
             }
         });
+
         for (Entity entity : this.entities) {
             entity.render();
         }
+        
         this.spriteBatch.end();
     }
     

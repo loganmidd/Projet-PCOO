@@ -163,7 +163,7 @@ public abstract class Entity {
             // An ellipse can be parametrised as:
             // | x(t) = xc + acos(t)
             // | y(t) = yc + bsin(t)
-            // | 0 <= t <= 2PI
+            // | 0 <= t < 2PI
             // Where (xc, yc) is the center of the ellipse,
             // and if the origin were moved to (xc, yc),
             // the equation of the ellipse would become (x/a)^2 + (y/b)^2 = 1

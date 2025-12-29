@@ -12,7 +12,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         this.world = World.getWorld();
-        this.world.loadTiledMap("map.tmx"); // Manual for now...
+        this.world.loadTiledMap("/home/Partage/L2/PCOO/projet/tiled/test.tmx"); // Manual for now...
     }
 
     @Override
