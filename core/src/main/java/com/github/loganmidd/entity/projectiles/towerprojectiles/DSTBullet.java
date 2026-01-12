@@ -1,12 +1,13 @@
 package com.github.loganmidd.entity.projectiles.towerprojectiles;
 
 import com.github.loganmidd.entity.Combattant;
+import com.github.loganmidd.entity.Entity;
 import com.github.loganmidd.entity.projectiles.Projectile;
 
 public class DSTBullet extends Projectile {
 
-    public DSTBullet(float x, float y, float angle) {
-        super(x, y, angle, 50);
+    public DSTBullet(Entity sender, float x, float y, float angle) {
+        super(sender, x, y, angle, 50);
         this.setWidth(25);
         this.setHeight(61);
     }

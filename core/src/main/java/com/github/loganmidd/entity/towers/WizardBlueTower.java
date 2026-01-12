@@ -15,7 +15,7 @@ public class WizardBlueTower extends Tower {
 
     public void attack(Enemy target) {
         float angle =  (float) Math.atan2(target.getCenterY() - this.getCenterY(), target.getCenterX() - this.getCenterX());
-        WizardProjectile proj = new WizardProjectile(this.getX(), this.getY(), angle);
+        WizardProjectile proj = new WizardProjectile(this, this.getX(), this.getY(), angle);
         World.getWorld().addEntity(proj);
         
     }

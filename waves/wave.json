@@ -1,0 +1,35 @@
+[
+{
+	class: com.github.loganmidd.entity.enemies.Goblin
+	timer: {
+		cooldownLength: 80
+		cooldownStart: 1768208094867
+	}
+	attackTimer: {
+		cooldownLength: 1000
+		cooldownStart: 1768208093947
+	}
+}
+{
+	class: com.github.loganmidd.entity.enemies.Goblin
+	timer: {
+		cooldownLength: 80
+		cooldownStart: 1768208094867
+	}
+	attackTimer: {
+		cooldownLength: 1000
+		cooldownStart: 1768208093947
+	}
+}
+{
+	class: com.github.loganmidd.entity.enemies.Goblin
+	timer: {
+		cooldownLength: 80
+		cooldownStart: 1768208094867
+	}
+	attackTimer: {
+		cooldownLength: 1000
+		cooldownStart: 1768208093947
+	}
+}
+]

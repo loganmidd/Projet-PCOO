@@ -10,13 +10,23 @@ import com.github.loganmidd.world.World;
 public abstract class Enemy extends Combattant {
     private EnemyPathVertex currentNode;
     private float speed;
-    private CooldownTimer attackTimer; 
+    private CooldownTimer attackTimer;
+    
+    private float attackDistance;
 
     public Enemy(float x, float y) {
         super(x, y);
-        this.speed = 3f; // Default
-        this.currentNode = World.getWorld().getEnemyPaths().getClosestVertex(this.getCenterPoint());
+        this.speed = 3f;
         this.attackTimer = new CooldownTimer(1000);
+        this.attackDistance = 100f; 
+    } 
+
+    public Enemy() {
+        this(0, 0); 
+    }
+
+    public void initEnemyPath() {
+        this.currentNode = World.getWorld().getEnemyPaths().getClosestVertex(this.getCenterPoint());
     }
 
     public void logic() {
@@ -38,9 +48,9 @@ public abstract class Enemy extends Combattant {
             } 
         }
         // If close enough, attack
-        if (bestDistance < 100 && this.attackTimer.isCooldownOver()) {
+        if (bestDistance < this.attackDistance && this.attackTimer.isCooldownOver()) {
             Combattant combattant = this.currentNode.getTargetCombattant();
-            combattant.takeDamage(this);
+            this.attack(combattant);
             this.attackTimer.resetCooldown();
         }
 
@@ -63,6 +73,10 @@ public abstract class Enemy extends Combattant {
         this.setDy((float) (-dr * Math.sin(angle))); 
     }
 
+    public void attack(Combattant combattant) {
+        combattant.takeDamage(this);
+    }
+
     public boolean isEnemy() {
         return true;
     }
@@ -73,5 +87,13 @@ public abstract class Enemy extends Combattant {
 
     public void setSpeed(float speed) {
         this.speed = speed;
+    }
+
+    public float getAttackDistance() {
+        return attackDistance;
+    }
+
+    public void setAttackDistance(float attackDistance) {
+        this.attackDistance = attackDistance;
     }
 }

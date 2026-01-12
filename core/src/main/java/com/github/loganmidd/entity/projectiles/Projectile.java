@@ -9,8 +9,9 @@ import com.github.loganmidd.world.World;
 
 public abstract class Projectile extends Combattant {
     private int t; // Used for getting position of projectile in parametric curve
+    private Entity sender;
 
-    public Projectile(float x, float y, float angle, float dr) {
+    public Projectile(Entity sender, float x, float y, float angle, float dr) {
         super(x, y);
         this.setCenterX(x);
         this.setCenterY(y);
@@ -21,10 +22,11 @@ public abstract class Projectile extends Combattant {
         // Using polar coordinates to get direction
         this.setDx((float) (dr * Math.cos(angle)));
         this.setDy((float) (dr * Math.sin(angle)));
+        this.sender = sender;
     }   
     
-    public Projectile(float x, float y, float angle) {
-        this(x, y, angle, 1); // default dr of 1
+    public Projectile(Entity sender, float x, float y, float angle) {
+        this(sender, x, y, angle, 1); // default dr of 1
     }
 
     @Override
@@ -68,5 +70,15 @@ public abstract class Projectile extends Combattant {
     }
 
     public abstract boolean collisionWith(Combattant combattant); // Returns true if projectile dissapears as an after effect
+
+    public Entity getSender() {
+        return sender;
+    }
+
+    public void setSender(Entity sender) {
+        this.sender = sender;
+    }
+
+    
 
 } 

@@ -1,0 +1,9 @@
+Tile layers:
+- above property (trees)
+
+Object layers:
+- spawn property, [player, crystal, enemy]
+
+Both:
+- isTraversable property to true/false
+- hasTrueCollision property

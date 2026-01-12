@@ -40,16 +40,13 @@ public class TowerPlacer {
             }          
         }
 
-
         if (this.state.equals(States.PLACING)) {
-            this.towerToPlace.setX(vector3.x);
-            this.towerToPlace.setY(vector3.y);
+            this.towerToPlace.setCenterX(vector3.x);
+            this.towerToPlace.setCenterY(vector3.y);
         } else if (this.state.equals(States.ROTATING)) {
             this.towerToPlace.setStartingAngle(angle);
             this.towerToPlace.setCurrentAngle(angle);
         }
-
-
     }
 
     public void render() {  
@@ -61,7 +58,4 @@ public class TowerPlacer {
     private Vector3 getMouseCoordinates() {
         return World.getWorld().getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)); 
     }
-
-
-
 }

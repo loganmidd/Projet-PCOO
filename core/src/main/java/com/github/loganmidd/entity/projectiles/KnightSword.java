@@ -13,7 +13,7 @@ public class KnightSword extends Projectile {
     // a strict line
 
     public KnightSword(Entity host) {
-        super(host.getCenterX(), host.getCenterY(), 0, 0);
+        super(host, host.getCenterX(), host.getCenterY(), 0, 0);
         this.setSlowDownFactor(0);
         float factor = 2f;
         this.setWidth(17*factor);

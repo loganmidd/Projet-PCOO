@@ -19,6 +19,10 @@ public class CooldownTimer {
         this(length, false);
     }
 
+    public CooldownTimer() {
+        this(500);
+    }
+
     public boolean isCooldownOver() {
         return this.cooldownStart + this.cooldownLength < TimeUtils.millis();
     }

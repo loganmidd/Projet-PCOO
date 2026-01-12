@@ -12,17 +12,19 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Disposable;
 import com.github.loganmidd.structures.Block;
 import com.github.loganmidd.utils.MapPoint;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
-public class TMap {
+public class TMap implements Disposable {
     private String path;
     private TiledMap map;
     private TMapRenderer renderer;
     private List<Block> blocks;
     private List<MapPoint> traversableCases;
+    private TiledMapTileLayer firstLayer;
 
     private Point playerSpawnPoint;
     private List<Point> crystalSpawnPoints;
@@ -40,6 +42,7 @@ public class TMap {
         this.blocks = new ArrayList<>();  
         this.traversableCases = new ArrayList<>();
 
+        this.firstLayer = TMapUtils.getFirstTileLayer(this.map);
 
         this.crystalSpawnPoints = new ArrayList<>();
         this.enemySpawnPoints = new ArrayList<>();
@@ -47,15 +50,15 @@ public class TMap {
         this.loadTraversabilityWalls();
         this.loadSpawnPoints();
         this.loadEnemyPathPoints();
+
     }
 
     private void loadTraversabilityWalls() {
-        TiledMapTileLayer firstLayer = TMapUtils.getFirstTileLayer(this.map);
-        int width = firstLayer.getTileWidth();
-        int height = firstLayer.getTileHeight();
+        int width = this.firstLayer.getTileWidth();
+        int height = this.firstLayer.getTileHeight();
         // Tile Layers
-        for (int x=0; x<firstLayer.getWidth(); x++) {
-            for (int y=0; y<firstLayer.getHeight(); y++) {
+        for (int x=0; x<this.firstLayer.getWidth(); x++) {
+            for (int y=0; y<this.firstLayer.getHeight(); y++) {
                 if (!TMapUtils.getTraversability(this.map, x, y)) {
                     Point point = this.getCoordinatesOfTile(x, y);
                     float unitScale = this.renderer.getUnitScale();
@@ -137,11 +140,10 @@ public class TMap {
         float topRightX = this.renderer.getTopLeftCornerX();
         float topRightY = this.renderer.getTopLeftCornerY();
         float unitScale = this.renderer.getUnitScale();
-        TiledMapTileLayer firstLayer = TMapUtils.getFirstTileLayer(this.map);
         
         Point point = new Point (
-            topRightX + unitScale*x*firstLayer.getTileWidth(),
-            topRightY + unitScale*y*firstLayer.getTileHeight()
+            topRightX + unitScale*x*this.firstLayer.getTileWidth(),
+            topRightY + unitScale*y*this.firstLayer.getTileHeight()
         );
         return point;
     } 
@@ -177,6 +179,14 @@ public class TMap {
 
     public void dispose() {
         this.renderer.dispose();
+    }
+
+    public int getWidth() {
+        return this.firstLayer.getWidth();
+    }
+
+    public int getHeight() {
+        return this.firstLayer.getHeight();
     }
     
 }

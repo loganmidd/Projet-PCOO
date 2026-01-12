@@ -1,13 +1,14 @@
 package com.github.loganmidd.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.github.loganmidd.controllers.KeyboardController;
+import com.github.loganmidd.controllers.PlayerController;
 import com.github.loganmidd.controllers.TowerPlacer;
-import com.github.loganmidd.entity.enemies.Goblin;
-import com.github.loganmidd.entity.playertypes.Knight;
+import com.github.loganmidd.effects.PlayerEffect;
 import com.github.loganmidd.entity.playertypes.PlayerType;
+import com.github.loganmidd.entity.playertypes.Wizard;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
@@ -15,37 +16,65 @@ public class Player extends Combattant {
     private PlayerType type;
     private boolean isSecondaryCharging;
     private int expCount;
-
+    private List<PlayerEffect> effects;
     private TowerPlacer placer;
+    private PlayerController controller;
+    private int level;
 
     public Player(float x, float y) {
         super(x, y); // (x, y) coordinates for bottom-left corner of hitbox
         this.setWidth(128);
         this.setHeight(128);
-        this.type = new Knight(this);
+        
+        this.type = new Wizard(this);
         this.isSecondaryCharging = false;
         this.setImmortal(true);
+        
         this.expCount = 0;
+        this.level = 0;
+        this.effects = new ArrayList<>();
+
+        this.controller = new KeyboardController();
     }
 
     public Player(Point p) {
         this(p.getX(), p.getY());
     } 
 
+    @Override
     public String getTexturePath() {
         return this.type.getTexturePath();
     }
 
+    @Override
     public boolean isPlayer() {
         return true;
     }
 
-    public void addExp(int xp) { this.expCount += xp; }
-    public void setExp(int xp) { this.expCount = xp; }
+    public void addExp(int xp) { 
+        this.expCount += xp; 
+        int level = this.getLevel();
+        if (level != this.level) {
+            this.level = level;
+            World.getWorld().createLevelUpUI(this);
+        }
+    }
+    public void setExp(int xp) { this.expCount = xp; this.level = this.getLevel(); }
     public int getExp()        { return this.expCount; }
 
     public int getLevel() {
+        return this.getLevel(this.expCount);
+    }
+
+    private int getLevel(int exp) {
         return (int) Math.floor(Math.log(this.expCount + 1));
+    }
+
+    public int getExpToNextLevel() {
+        int i = 0;
+        while (this.getLevel() != this.getLevel(this.expCount + i++)) {}
+        return i;
+
     }
 
     public void input() {
@@ -55,44 +84,27 @@ public class Player extends Combattant {
 
         float a = 6f; // Arbitrary
         // Movement
-        // Right arrow key
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            this.setDx(a);
-        }
-        // Left arrow key
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            this.setDx(-a);
-        }
-        // Up arrow key
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            this.setDy(a);
-        }
-        // Down arrow key
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            this.setDy(-a);
-        }
+        this.addDx(this.controller.getXMovement() * a);
+        this.addDy(this.controller.getYMovement() * a);
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            List<Point> points = World.getWorld().getTMap().getEnemySpawnPoints();
-            for (Point point : points) {
-                World.getWorld().addEntity(new Goblin(point.getX(), point.getY()));
-            }
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
+        if (this.controller.isPrimaryTowerKeyJustPressed()) {
             this.placer = new TowerPlacer(this.type.getPrimaryTower());
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+        else if (this.controller.isSecondaryTowerKeyJustPressed()) {
             this.placer = new TowerPlacer(this.type.getSecondaryTower());
         }
 
+        else if (this.controller.isCancelButtonPressed()) {
+            this.placer = null;
+        }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+
+        if (this.controller.isPrimaryAttackKeyJustPressed()) {
             this.type.primaryAttack();
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (this.controller.isSecondaryAttackKeyPressed()) {
             if (!this.isSecondaryCharging) {
                 this.type.startSecondaryAttack();
             }
@@ -101,6 +113,12 @@ public class Player extends Combattant {
             this.isSecondaryCharging = false;
             this.type.endSecondaryAttack();
         }
+
+        if (this.controller.isStartWaveButtonJustPressed() && World.getWorld().isWaveOver()) {
+            World.getWorld().getWaveManager().startNextWave();
+        }
+
+        // DEBUGGING
 
         if (this.placer != null) {
             this.placer.logic();
@@ -114,6 +132,19 @@ public class Player extends Combattant {
         if (this.placer != null) {
             this.placer.render();
         }
+    }
+
+    public void addEffect(PlayerEffect playerEffect) {
+        this.effects.add(playerEffect);
+        playerEffect.applyEffect(this);
+    }
+
+    public void removeEffect(PlayerEffect playerEffect) {
+        this.effects.remove(playerEffect);
+    }
+
+    public List<PlayerEffect> getEffects() {
+        return this.effects;
     }
     
 }

@@ -19,7 +19,7 @@ public class DeadlyStrikeTower extends Tower {
     public void attack(Enemy target) {
         float angle =  (float) Math.atan2(  target.getCenterY() - this.getCenterY(), 
                                             target.getCenterX() - this.getCenterX());
-        DSTBullet proj = new DSTBullet(this.getX(), this.getY(), angle);
+        DSTBullet proj = new DSTBullet(this, this.getX(), this.getY(), angle);
 
         World.getWorld().addEntity(proj);
         

@@ -1,0 +1,38 @@
+Date : 2026-01-11 22:45:09
+Directory : /home/Partage/L2/PCOO/projet/core/src/main/java/com/github/loganmidd
+Total : 8 files,  68 codes, 0 comments, 17 blanks, all 85 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Java     |          8 |         68 |          0 |         17 |         85 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                            | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                               |          8 |         68 |          0 |         17 |         85 |
+| defenders                                                                                       |          1 |          6 |          0 |          2 |          8 |
+| entity                                                                                          |          2 |          6 |          0 |          2 |          8 |
+| entity/enemies                                                                                  |          2 |          6 |          0 |          2 |          8 |
+| utils                                                                                           |          1 |          3 |          0 |          1 |          4 |
+| waves                                                                                           |          2 |         39 |          0 |         13 |         52 |
+| world                                                                                           |          2 |         14 |          0 |         -1 |         13 |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                        | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /home/Partage/L2/PCOO/projet/core/src/main/java/com/github/loganmidd/defenders/Main.java        | Java     |          6 |          0 |          2 |          8 |
+| /home/Partage/L2/PCOO/projet/core/src/main/java/com/github/loganmidd/entity/enemies/Enemy.java  | Java     |          3 |          0 |          1 |          4 |
+| /home/Partage/L2/PCOO/projet/core/src/main/java/com/github/loganmidd/entity/enemies/Goblin.java | Java     |          3 |          0 |          1 |          4 |
+| /home/Partage/L2/PCOO/projet/core/src/main/java/com/github/loganmidd/utils/CooldownTimer.java   | Java     |          3 |          0 |          1 |          4 |
+| /home/Partage/L2/PCOO/projet/core/src/main/java/com/github/loganmidd/waves/WaveLoader.java      | Java     |         -1 |          0 |          0 |         -1 |
+| /home/Partage/L2/PCOO/projet/core/src/main/java/com/github/loganmidd/waves/WaveManager.java     | Java     |         40 |          0 |         13 |         53 |
+| /home/Partage/L2/PCOO/projet/core/src/main/java/com/github/loganmidd/world/Game.java            | Java     |         -8 |          0 |         -7 |        -15 |
+| /home/Partage/L2/PCOO/projet/core/src/main/java/com/github/loganmidd/world/World.java           | Java     |         22 |          0 |          6 |         28 |
+| Total                                                                                           |          |         68 |          0 |         17 |         85 |
++-------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

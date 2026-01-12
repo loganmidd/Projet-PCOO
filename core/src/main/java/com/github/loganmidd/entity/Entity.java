@@ -65,8 +65,7 @@ public abstract class Entity {
     public boolean isPlayer() { return false; }
     public boolean isTower() { return false; }
     public boolean isEnemy() { return false;}
-
-
+    public boolean isCrystal() { return false; }
 
     public TextureRenderer getTextureRenderer() { 
         if (this.renderer == null) {

@@ -1,13 +1,14 @@
 package com.github.loganmidd.entity.projectiles.towerprojectiles;
 
 import com.github.loganmidd.entity.Combattant;
+import com.github.loganmidd.entity.Entity;
 import com.github.loganmidd.entity.projectiles.Projectile;
 
 public class HarpoonTowerProjectile extends Projectile {
     private int pierced;
 
-    public HarpoonTowerProjectile(float x, float y, float angle) {
-        super(x, y, angle);
+    public HarpoonTowerProjectile(Entity sender, float x, float y, float angle) {
+        super(sender, x, y, angle);
         this.pierced = 0;
     }
 

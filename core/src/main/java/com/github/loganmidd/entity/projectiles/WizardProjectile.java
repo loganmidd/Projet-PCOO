@@ -1,12 +1,13 @@
 package com.github.loganmidd.entity.projectiles;
 
 import com.github.loganmidd.entity.Combattant;
+import com.github.loganmidd.entity.Entity;
 
 public class WizardProjectile extends Projectile {
     private float angle;
 
-    public WizardProjectile(float x, float y, float angle) {
-        super(x, y, angle, 10);
+    public WizardProjectile(Entity sender, float x, float y, float angle) {
+        super(sender, x, y, angle, 10);
         this.angle = 0;
     }
 

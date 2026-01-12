@@ -6,7 +6,12 @@ public class Goblin extends Enemy {
         this.setSpeed(2f);
     }
 
+    public Goblin() {
+        this(0, 0);
+    }
+
     public String getTexturePath() {
         return "goblin.png";
     }
-}
+    
+} 

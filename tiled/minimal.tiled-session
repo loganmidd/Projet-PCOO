@@ -1,0 +1,118 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "test.tmx",
+    "expandedProjectPaths": [
+        "terrain",
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "cloud_tileA5_2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "cloud_tileA5_3.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "cloud_tileset.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 3
+        },
+        "minimal.tmx": {
+            "expandedGroupLayers": [
+                8
+            ],
+            "scale": 1.6624999999999999,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 160,
+                "y": 159.69924812030078
+            }
+        },
+        "minimal.tmx#TX Plant": {
+            "scaleInDock": 1
+        },
+        "minimal.tmx#TX Shadow Plant": {
+            "scaleInDock": 1
+        },
+        "terrain.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "terrain/Terrain.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "test.tmx": {
+            "expandedGroupLayers": [
+                56,
+                17,
+                44,
+                40,
+                38
+            ],
+            "expandedObjectLayers": [
+                39,
+                40
+            ],
+            "scale": 4,
+            "selectedLayer": 31,
+            "viewCenter": {
+                "x": 770.75,
+                "y": 1062.125
+            }
+        },
+        "test.tmx#TX Plant": {
+            "scaleInDock": 1
+        },
+        "test.tmx#TX Props": {
+            "scaleInDock": 1
+        },
+        "test.tmx#TX Shadow": {
+            "scaleInDock": 1
+        },
+        "test.tmx#TX Shadow Plant": {
+            "scaleInDock": 1
+        },
+        "test.tmx#TX Struct": {
+            "scaleInDock": 1
+        },
+        "test.tmx#TX Tileset Grass": {
+            "scaleInDock": 1
+        },
+        "test.tmx#TX Tileset Stone Ground": {
+            "scaleInDock": 1
+        },
+        "test.tmx#TX Tileset Wall": {
+            "scaleInDock": 1.5
+        }
+    },
+    "last.imagePath": "/home/Partage/L2/PCOO/projet/tiled/cloud_tileset/rpgmaker_vx",
+    "map.height": 10,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 10,
+    "openFiles": [
+        "minimal.tmx",
+        "terrain.tsx",
+        "terrain/Terrain.tsx",
+        "test.tmx"
+    ],
+    "project": "minimal.tiled-project",
+    "property.type": "bool",
+    "recentFiles": [
+        "minimal.tmx",
+        "terrain.tsx",
+        "terrain/Terrain.tsx",
+        "test.tmx",
+        "cloud_tileA5_2.tsx",
+        "cloud_tileA5_3.tsx",
+        "cloud_tileset.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.transparentColor": "#455377",
+    "tileset.useTransparentColor": true
+}

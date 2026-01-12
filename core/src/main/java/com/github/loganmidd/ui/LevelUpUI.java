@@ -1,0 +1,145 @@
+package com.github.loganmidd.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.github.loganmidd.effects.PlayerEffect;
+import com.github.loganmidd.entity.Player;
+
+public class LevelUpUI implements UI {
+    private Stage stage;
+    private List<PlayerEffect> effects;
+    private Player player;
+    private List<Button> buttons;
+    private boolean isDisposed;
+    private Skin skin;
+
+    public LevelUpUI(Player player) {
+        this.effects = new ArrayList<>();
+        this.player = player;
+        this.stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        Gdx.input.setInputProcessor(stage);
+
+        Pixmap pixmap = new Pixmap(1, 1, Format.RGBA8888);
+        pixmap.setColor(0.2f, 0.2f, 0.2f, 0.5f);
+        pixmap.fill();
+        Texture background = new Texture(pixmap);
+
+        pixmap.setColor(0.4f, 0.4f, 0.4f, 0.5f);
+        pixmap.fill();
+        Texture backgroundHold = new Texture(pixmap);
+        pixmap.dispose();
+
+        BitmapFont font = new BitmapFont();
+        TextButtonStyle style = new TextButtonStyle();
+        
+        this.skin = new Skin();
+        this.skin.add("default", font);
+        style.font = font;
+
+        style.up = new TextureRegionDrawable(background);
+        style.over = new TextureRegionDrawable(backgroundHold);
+        skin.add("default", style);
+
+        this.isDisposed = false;
+        this.createMenu();
+    }
+
+    public void addEffect(PlayerEffect playerEffect) {
+        this.effects.add(playerEffect);
+        this.createMenu();
+    }
+
+    public void removeEffect(PlayerEffect playerEffect) {
+        this.effects.remove(playerEffect);
+        this.createMenu();
+    }
+
+    public List<PlayerEffect> getEffects() {
+        return this.effects;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void createMenu() {
+        float width = Gdx.graphics.getWidth() * 0.7f;
+        float height = Gdx.graphics.getHeight() * 0.7f;
+        int columns = this.effects.size();
+        int i = 0;
+        float cornerX = (Gdx.graphics.getWidth() - width)/2f;
+        float cornerY = (Gdx.graphics.getHeight() - height)/2f;
+
+        this.buttons = new ArrayList<>();
+        this.stage.clear();
+
+        for (PlayerEffect effect : this.effects) {
+
+            TextButton button = new TextButton(effect.getName() + "\n" + effect.getDescription(), skin);
+            button.setHeight(height * 0.9f);
+            button.setWidth(width / columns);
+            button.setPosition(cornerX + i*width/columns, cornerY);
+            button.getLabel().setWrap(true);
+            
+            button.addListener(new InputListener() {
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    getPlayer().addEffect(effect);
+                    dispose();
+                    return true;
+                } 
+            });
+
+            this.buttons.add(button);
+            i++;
+        
+        }
+
+        for (Button button : this.buttons) {
+            this.stage.addActor(button);
+        }
+    }
+
+    public void render() {
+        if (this.isDisposed) {
+            return;
+        }
+        float delta = Gdx.graphics.getDeltaTime();
+        this.stage.getCamera().update();
+        this.stage.act(delta);
+        this.stage.draw();
+    }
+
+    public void dispose() {
+        this.stage.dispose();
+        this.isDisposed = true;
+    }
+
+    public void resize(int width, int height) {
+        if (!this.isDisposed) {
+            this.stage.getViewport().getCamera().viewportWidth = width;
+            this.stage.getViewport().getCamera().viewportHeight =  height/width;
+            this.stage.getViewport().getCamera().update();
+        }
+    }
+    
+}

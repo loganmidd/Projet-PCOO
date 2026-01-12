@@ -13,7 +13,7 @@ public class HarpoonTower extends Tower {
     public void attack(Enemy enemy) {
         float angle =  (float) Math.atan2(  enemy.getCenterY() - this.getCenterY(), 
                                             enemy.getCenterX() - this.getCenterX());
-        HarpoonTowerProjectile proj = new HarpoonTowerProjectile(this.getX(), this.getY(), angle);
+        HarpoonTowerProjectile proj = new HarpoonTowerProjectile(this, this.getX(), this.getY(), angle);
 
         World.getWorld().addEntity(proj);
     }

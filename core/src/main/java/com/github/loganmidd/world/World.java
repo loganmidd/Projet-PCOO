@@ -3,21 +3,29 @@ package com.github.loganmidd.world;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Disposable;
+import com.github.loganmidd.Game.Game;
+import com.github.loganmidd.effects.PlayerEffect;
 import com.github.loganmidd.entity.Crystal;
 import com.github.loganmidd.entity.Entity;
 import com.github.loganmidd.entity.Player;
+import com.github.loganmidd.entity.enemies.Enemy;
 import com.github.loganmidd.structures.Block;
 import com.github.loganmidd.tiled.TMap;
 import com.github.loganmidd.tiled.TMapEnemyPaths;
+import com.github.loganmidd.ui.LevelUpUI;
+import com.github.loganmidd.ui.PlayerHUD;
 import com.github.loganmidd.utils.Point;
+import com.github.loganmidd.waves.WaveManager;
 
-public final class World {
+public final class World implements Disposable {
     private int frameNumber;
     private List<Block> blocks;
     private List<Block> blocksToAdd;
@@ -31,6 +39,10 @@ public final class World {
     private float zoomFactor = 1500f; // Number is arbitrary
     private TMap tMap; 
     private TMapEnemyPaths paths;
+    private LevelUpUI levelUpUI;
+    private PlayerHUD playerHUD;
+    private WaveManager manager;
+    private Game game;
 
     private World() {
         this.blocks = new ArrayList<>();
@@ -46,6 +58,7 @@ public final class World {
         this.camera.update();		
         this.shapeRenderer = new ShapeRenderer();
         this.frameNumber = 0;
+        this.manager = new WaveManager();
     }
 
     public static World getWorld() {
@@ -68,12 +81,28 @@ public final class World {
     public TMap           getTMap()          { return this.tMap; }
     public TMapEnemyPaths getEnemyPaths()    { return this.paths; }
     public int            getFrameNumber()   { return this.frameNumber; }
+    public WaveManager    getWaveManager()   { return this.manager; }
+    public Game           getGame()          { return this.game; }
+    public int            getEnemyCount() {
+        int count = 0;
+        for (Entity entity : this.entities) {
+            if (entity.isEnemy()) {
+                count++;
+            }
+        }
+        return count;
+    }
     
     public void addBlock(Block block) { 
         blocks.add(block);
     }
     public void addEntity(Entity entity) { 
         this.entitiesToAdd.add(entity); 
+
+        if (entity.isEnemy()) {
+            Enemy enemy = (Enemy) entity;
+            enemy.initEnemyPath();
+        }
     }
 
     public void removeBlock(Block block)    { this.blocks.remove(block); this.blocksToAdd.remove(block); }
@@ -81,6 +110,7 @@ public final class World {
     
     public void setCamera(OrthographicCamera newCamera)    { this.camera = newCamera; }
     public void setSpriteBatch(SpriteBatch newSpriteBatch) { this.spriteBatch = newSpriteBatch; }
+    public void setGame(Game game) { this.game = game; this.getWaveManager().setGame(game); }
 
 ///////////////////////////////////////////////////////////
 ///                        Logic                        ///
@@ -106,8 +136,21 @@ public final class World {
             if (e.getClass().equals(Player.class)) {
                 this.camera.position.x = e.getCenterX();
                 this.camera.position.y = e.getCenterY();
+                if (this.playerHUD == null) {
+                    this.playerHUD = new PlayerHUD((Player) e);
+                }
             }
         }
+        // Dispose of entities out of bounds
+        Point bottomRightCorner = this.tMap.getCoordinatesOfTile(this.tMap.getWidth(), this.tMap.getHeight());
+        for (Entity entity : this.getEntities()) {
+            if (entity.getX() < 0 || entity.getX() > bottomRightCorner.getX()) {
+                entity.dispose();
+            } else if (entity.getY() < 0 || entity.getY() > bottomRightCorner.getY()) {
+                entity.dispose();
+            }
+        }
+
         // Remove disposed entities
         List<Entity> disposed = new ArrayList<>();
         for (Entity entity :  this.getEntities()) {
@@ -116,6 +159,8 @@ public final class World {
             }
         }
         this.entities.removeAll(disposed);
+
+        this.manager.logic();
     }
 
     public void input() {
@@ -131,6 +176,12 @@ public final class World {
         this.camera.update();
         this.spriteBatch.setProjectionMatrix(this.camera.combined);
         this.tMap.render();
+        if (this.levelUpUI != null) {
+            this.levelUpUI.render();
+        }
+        if (this.playerHUD != null) {
+            this.playerHUD.render();
+        }
     }
 
     public void renderEntities() {
@@ -148,6 +199,11 @@ public final class World {
         }
         
         this.spriteBatch.end();
+
+    }
+
+    public boolean isWaveOver() {
+        return this.getEnemyCount() == 0;
     }
     
     public void dispose() {
@@ -156,12 +212,24 @@ public final class World {
         }
         this.spriteBatch.dispose();
         this.tMap.dispose();
+        
+        if (this.levelUpUI != null) {
+            this.levelUpUI.dispose();
+        }
     }
 
     public void resize(int width, int height) {
         this.camera.viewportWidth = zoomFactor;
         this.camera.viewportHeight = zoomFactor * height/width;
         this.camera.update();
+
+        if (this.levelUpUI != null) {
+            this.levelUpUI.resize(width, height);
+        }
+
+        if (this.playerHUD != null) {
+            this.playerHUD.resize(width, height);
+        }
     }
 
     public void loadTiledMap(String filePath) {
@@ -169,8 +237,35 @@ public final class World {
         this.addEntity(new Player(this.tMap.getPlayerSpawnPoint()));
 
         for (Point point : this.tMap.getCrystalSpawnPoints()) {
-            this.addEntity(new Crystal(point));
+            Crystal crystal = new Crystal(0, 0);
+            crystal.setCenterX(point.getX());
+            crystal.setCenterY(point.getY());
+            this.addEntity(crystal);
         }
         this.paths = new TMapEnemyPaths();
     }
+
+    public void createLevelUpUI(Player player) {
+        this.levelUpUI = new LevelUpUI(player);
+        int upgradeChoiceCount = 3;
+        Map<PlayerEffect, Float> effects = this.game.getPlayerEffects();
+        float sum = 0; 
+        for (float f : effects.values()) {
+            sum += f;
+        }
+
+        float random;
+        for (int i = 0; i< upgradeChoiceCount; i++) {
+            random = (float) Math.random() * sum;
+            for (PlayerEffect effect : effects.keySet()) {
+                random -= effects.get(effect);
+                if (random < 0) {
+                    this.levelUpUI.addEffect(effect);
+                    break;
+                }
+            }
+        }
+    }
+
+
 }

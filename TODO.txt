@@ -1,0 +1,9 @@
+TODO:
+- Monsters (nteractions + player) 
+- Crystal 
+- towers, exp
+- roguelike system
+- menuing
+- nP?  
+- Docs
+

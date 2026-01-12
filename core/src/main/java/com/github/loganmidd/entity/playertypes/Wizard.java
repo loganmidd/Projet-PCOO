@@ -21,8 +21,8 @@ public class Wizard implements PlayerType {
 
     public void primaryAttack() {
         float angle =  (float) Math.atan2(this.host.getDy(), this.host.getDx());
-        WizardProjectile proj = new WizardProjectile(this.host.getCenterX(), this.host.getCenterY(), angle);
-        proj.setAttackDamage(proj.getAttackDamage() * this.host.getLevel()/2);
+        WizardProjectile proj = new WizardProjectile(this.host, this.host.getCenterX(), this.host.getCenterY(), angle);
+        proj.setAttackDamage(this.host.getAttackDamage() * this.host.getLevel());        
         World.getWorld().addEntity(proj);
     }
 
@@ -37,16 +37,16 @@ public class Wizard implements PlayerType {
         float hostAngle =  (float) Math.atan2(this.host.getDy(), this.host.getDx());
         float totalAngle = (float) Math.PI / 4f;
         if (numProjectiles % 2 == 1) {
-            WizardProjectile proj = new WizardProjectile(this.host.getCenterX(), this.host.getCenterY(), hostAngle);
-            proj.setAttackDamage(proj.getAttackDamage() * this.host.getLevel());
+            WizardProjectile proj = new WizardProjectile(this.host, this.host.getCenterX(), this.host.getCenterY(), hostAngle);
+            proj.setAttackDamage(this.host.getAttackDamage() * this.host.getLevel());
             World.getWorld().addEntity(proj);
             numProjectiles--;
         } 
 
         for (int i = 0; i<numProjectiles; i++) {
             float angle = hostAngle + (totalAngle)*((float) i)/numProjectiles;
-            WizardProjectile proj = new WizardProjectile(this.host.getCenterX(), this.host.getCenterY(), angle);
-            proj.setAttackDamage(proj.getAttackDamage() * this.host.getLevel()/2);
+            WizardProjectile proj = new WizardProjectile(this.host, this.host.getCenterX(), this.host.getCenterY(), angle);
+            proj.setAttackDamage(this.host.getAttackDamage() * this.host.getLevel());
             World.getWorld().addEntity(proj);
         }
         

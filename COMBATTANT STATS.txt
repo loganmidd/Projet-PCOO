@@ -1,0 +1,38 @@
+Player Types:
+- Wizard
+- Knight
+- Monk
+
+Tower Types:
+- Fireball Tower (Wizard), Medium splash damage. Medium speed
+- DST (Wizard), High single target damage. Slow speed
+
+- Wall (Knight), High health wall
+- Ballista (Knight), Medium damage/speed, piercing
+
+- Thunder Aura (Monk), Low damage, untargetable && no collision
+- Ensnare Aura (Monk), same but slows down enemies instead
+
+Monster Types:
+
+- Goblin:
+    Description: Weak, low damage, strong in numbers
+
+- Archer:
+    Description: Ranged, medium damage, medium health
+
+- Orc:
+    Description: Slow, medium damage, medium-high health, 
+
+- Ogre:
+    Description: Slow, Very high health, High Health, like a semi-boss
+
+- Wyvern:
+    Description: Arial, Ranged, medium health, medium damage, 
+
+- Kobold:
+    Description: Very low health, very high speed, one attack only before death. Only attacks buildings/crystals
+
+
+
+

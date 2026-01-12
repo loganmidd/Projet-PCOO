@@ -17,7 +17,12 @@ public class Crystal extends Combattant {
     }
 
     public String getTexturePath() {
-        return "spriteNotFound.png";
+        return "crystal.png";
+    }
+
+    @Override 
+    public boolean isCrystal() {
+        return true;
     }
 
 }
