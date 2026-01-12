@@ -51,7 +51,6 @@ public class Player extends Combattant {
         
         this.type = new Wizard(this);
         this.isSecondaryCharging = false;
-        this.setImmortal(true);
         
         this.expCount = 0;
         this.level = 0;
