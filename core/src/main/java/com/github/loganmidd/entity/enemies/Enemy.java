@@ -7,6 +7,12 @@ import com.github.loganmidd.utils.EnemyPathVertex;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
+/**
+ * Represents an enemy entity in the game world.
+ * <p>
+ * Enemies follow a path or track combatants, and attack when within range.
+ * They extend {@link Combattant} to participate in combat.
+ */
 public abstract class Enemy extends Combattant {
     private EnemyPathVertex currentNode;
     private float speed;
@@ -14,6 +20,12 @@ public abstract class Enemy extends Combattant {
     
     private float attackDistance;
 
+    /**
+     * Constructs an Enemy at the specified coordinates.
+     *
+     * @param x the initial x coordinate
+     * @param y the initial y coordinate
+     */
     public Enemy(float x, float y) {
         super(x, y);
         this.speed = 3f;
@@ -21,14 +33,26 @@ public abstract class Enemy extends Combattant {
         this.attackDistance = 100f; 
     } 
 
+    /**
+     * Constructs an Enemy at the origin (0, 0).
+     */
     public Enemy() {
         this(0, 0); 
     }
 
+    /**
+     * Initializes the enemy's path by finding the closest path vertex to its current location.
+     */
     public void initEnemyPath() {
         this.currentNode = World.getWorld().getEnemyPaths().getClosestVertex(this.getCenterPoint());
     }
 
+    /**
+     * Executes the enemy's logic for movement and attacking.
+     * <p>
+     * This method checks for nearby combatants to target, attacks if in range,
+     * updates the path to follow, and moves towards the target node.
+     */
     public void logic() {
         super.logic();
         // If the enemy is not following a non crystal entity, check if it should
@@ -73,26 +97,58 @@ public abstract class Enemy extends Combattant {
         this.setDy((float) (-dr * Math.sin(angle))); 
     }
 
+    /**
+     * Attacks the specified combatant.
+     * <p>
+     * This deals damage to the target, originating from this enemy.
+     *
+     * @param combattant the target to attack
+     */
     public void attack(Combattant combattant) {
         combattant.takeDamage(this);
     }
 
+    /**
+     * Checks if this entity is an enemy.
+     *
+     * @return true, indicating this is an enemy
+     */
     public boolean isEnemy() {
         return true;
     }
 
+    /**
+     * Gets the current movement speed of the enemy.
+     *
+     * @return the movement speed
+     */
     public float getSpeed() {
         return speed;
     }
 
+    /**
+     * Sets the movement speed of the enemy.
+     *
+     * @param speed the new movement speed
+     */
     public void setSpeed(float speed) {
         this.speed = speed;
     }
 
+    /**
+     * Gets the attack distance threshold.
+     *
+     * @return the distance within which the enemy will attack
+     */
     public float getAttackDistance() {
         return attackDistance;
     }
 
+    /**
+     * Sets the attack distance threshold.
+     *
+     * @param attackDistance the distance within which the enemy will attack
+     */
     public void setAttackDistance(float attackDistance) {
         this.attackDistance = attackDistance;
     }

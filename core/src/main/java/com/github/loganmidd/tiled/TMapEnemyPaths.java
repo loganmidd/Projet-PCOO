@@ -7,11 +7,27 @@ import com.github.loganmidd.utils.EnemyPathVertex;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
+/**
+ * Manages the creation and storage of enemy path nodes based on the world map configuration.
+ * <p>
+ * This class calculates a navigation graph for enemies by connecting crystal spawn points
+ * to the set of designated enemy path points. It builds a linked structure of {@link EnemyPathVertex}
+ * objects, allowing enemies to navigate from crystals to various points on the map.
+ */
 public class TMapEnemyPaths {
+    /** The set of all path points defined in the map. */
     private HashSet<Point> vertices;
+    /** The set of crystal objects used as path sources. */
     private HashSet<Crystal> crystals;
+    /** The calculated set of navigation nodes connecting crystals and path points. */
     private HashSet<EnemyPathVertex> nodes;
 
+    /**
+     * Constructs a new path manager and calculates the navigation graph.
+     * <p>
+     * Initializes the path vertices from the world map and creates crystals
+     * at their spawn points. Then, it triggers the calculation of the node graph.
+     */
     public TMapEnemyPaths() {
         this.vertices = new HashSet<>();
         this.crystals = new HashSet<>();
@@ -23,6 +39,18 @@ public class TMapEnemyPaths {
 
     }
 
+    /**
+     * Calculates the enemy navigation graph.
+     * <p>
+     * The algorithm proceeds in two phases:
+     * <ol>
+     * <li>Initializes nodes with crystal locations.</li>
+     * <li>Iteratively adds remaining path points to the graph by finding the
+     * nearest existing node.</li>
+     * </ol>
+     * This builds a set of connected vertices where each new point connects to its
+     * closest existing neighbor.
+     */
     private void calculate() {
         // First, add crystals.
         this.nodes = new HashSet<>();
@@ -69,10 +97,25 @@ public class TMapEnemyPaths {
         }
     }
 
+    /**
+     * Retrieves the calculated set of navigation nodes.
+     *
+     * @return The set of {@link EnemyPathVertex} objects representing the navigation graph.
+     */
     public HashSet<EnemyPathVertex> getNodes() {
         return this.nodes;
     }
 
+    /**
+     * Finds the closest navigation vertex to a given point.
+     * <p>
+     * If the closest vertex has a next node, and the angle between the target point,
+     * the vertex, and the next vertex is acute (indicating the entity has passed the vertex),
+     * this method returns the next vertex to avoid backtracking.
+     *
+     * @param point The point from which to find the closest vertex.
+     * @return The optimal closest {@link EnemyPathVertex} to navigate towards.
+     */
     public EnemyPathVertex getClosestVertex(Point point) {
         float bestDistance = Float.POSITIVE_INFINITY;
         EnemyPathVertex best = null;

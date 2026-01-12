@@ -10,8 +10,25 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
+/**
+ * Utility methods for handling Tiled maps.
+ *
+ * @author Logan Middendorf
+ */
 public class TMapUtils {
 
+    /**
+     * Determines if a specific tile is traversable based on the "isTraversable" property.
+     * <p>
+     * Checks layers from top to bottom. If a tile layer has a cell at the specified
+     * coordinates and defines the "isTraversable" property, that value is returned.
+     * </p>
+     *
+     * @param map The tiled map to check.
+     * @param x The x coordinate of the tile.
+     * @param y The y coordinate of the tile.
+     * @return {@code true} if the tile is traversable, {@code false} otherwise.
+     */
     public static boolean getTraversability(TiledMap map, int x, int y) {
         List<MapLayer> layers = flattenTiledMapLayers(map.getLayers());
         for (int index=layers.size()-1; index>=0; index--) {
@@ -35,6 +52,12 @@ public class TMapUtils {
         return false;
     }
 
+    /**
+     * Retrieves the first tile layer found in the map.
+     *
+     * @param map The tiled map to search.
+     * @return The first {@link TiledMapTileLayer} found, or {@code null} if none exists.
+     */
     public static TiledMapTileLayer getFirstTileLayer(TiledMap map) {
         for (MapLayer layer : map.getLayers()) {
             if (layer.getClass().equals(TiledMapTileLayer.class)) {
@@ -44,6 +67,16 @@ public class TMapUtils {
         return null;
     }
 
+    /**
+     * Retrieves all layers that contain a specific property key.
+     * <p>
+     * Includes layers inside {@link MapGroupLayer}s.
+     * </p>
+     *
+     * @param layers The collection of layers to filter.
+     * @param property The property key to search for.
+     * @return A list of layers that have the specified property.
+     */
     public static List<MapLayer> getMapLayersWithProperty(MapLayers layers, String property) {
         List<MapLayer> filtered = new ArrayList<>();
         for (MapLayer layer : flattenTiledMapLayers(layers)) {
@@ -54,6 +87,16 @@ public class TMapUtils {
         return filtered;
     }
 
+    /**
+     * Retrieves all layers that do not contain a specific property key.
+     * <p>
+     * Includes layers inside {@link MapGroupLayer}s.
+     * </p>
+     *
+     * @param layers The collection of layers to filter.
+     * @param property The property key to search for.
+     * @return A list of layers that do not have the specified property.
+     */
     public static List<MapLayer> getMapLayersWithoutProperty(MapLayers layers, String property) {
         List<MapLayer> filtered = new ArrayList<>();
         for (MapLayer layer : flattenTiledMapLayers(layers)) {
@@ -64,6 +107,15 @@ public class TMapUtils {
         return filtered;
     }
 
+    /**
+     * Flattens a collection of map layers, unwrapping any {@link MapGroupLayer}s.
+     * <p>
+     * This method recursively traverses group layers to produce a flat list of non-group layers.
+     * </p>
+     *
+     * @param layers The collection of layers to flatten.
+     * @return A flat list of map layers, excluding any {@link MapGroupLayer} instances.
+     */
     public static List<MapLayer> flattenTiledMapLayers(MapLayers layers) {
         // To flatten MapLayer object that might have group layers instead of only TileLayers, ObjectLayers, etc.
         List<MapLayer> flattened = new ArrayList<>();

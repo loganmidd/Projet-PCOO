@@ -20,7 +20,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.github.loganmidd.effects.PlayerEffect;
 import com.github.loganmidd.entity.Player;
 
-public class LevelUpUI implements UI {
+/**
+ * Manages the user interface for the level-up screen, allowing the player to select new effects.
+ */
+public class LevelUpUI implements GameUI {
     private Stage stage;
     private List<PlayerEffect> effects;
     private Player player;
@@ -28,6 +31,11 @@ public class LevelUpUI implements UI {
     private boolean isDisposed;
     private Skin skin;
 
+    /**
+     * Constructs a new LevelUpUI and initializes the stage and skin.
+     *
+     * @param player The player associated with this UI
+     */
     public LevelUpUI(Player player) {
         this.effects = new ArrayList<>();
         this.player = player;
@@ -59,28 +67,56 @@ public class LevelUpUI implements UI {
         this.createMenu();
     }
 
+    /**
+     * Adds an effect to the list and updates the menu.
+     *
+     * @param playerEffect The effect to add
+     */
     public void addEffect(PlayerEffect playerEffect) {
         this.effects.add(playerEffect);
         this.createMenu();
     }
 
+    /**
+     * Removes an effect from the list and updates the menu.
+     *
+     * @param playerEffect The effect to remove
+     */
     public void removeEffect(PlayerEffect playerEffect) {
         this.effects.remove(playerEffect);
         this.createMenu();
     }
 
+    /**
+     * Returns the list of available effects.
+     *
+     * @return The list of PlayerEffect objects
+     */
     public List<PlayerEffect> getEffects() {
         return this.effects;
     }
 
+    /**
+     * Returns the player associated with this UI.
+     *
+     * @return The Player object
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * Sets the player associated with this UI.
+     *
+     * @param player The Player object to set
+     */
     public void setPlayer(Player player) {
         this.player = player;
     }
 
+    /**
+     * Creates the menu buttons based on the current list of effects.
+     */
     public void createMenu() {
         float width = Gdx.graphics.getWidth() * 0.7f;
         float height = Gdx.graphics.getHeight() * 0.7f;
@@ -119,6 +155,9 @@ public class LevelUpUI implements UI {
         }
     }
 
+    /**
+     * Renders the UI.
+     */
     public void render() {
         if (this.isDisposed) {
             return;
@@ -129,11 +168,20 @@ public class LevelUpUI implements UI {
         this.stage.draw();
     }
 
+    /**
+     * Disposes of resources used by the UI.
+     */
     public void dispose() {
         this.stage.dispose();
         this.isDisposed = true;
     }
 
+    /**
+     * Handles resize events for the UI.
+     *
+     * @param width The new width
+     * @param height The new height
+     */
     public void resize(int width, int height) {
         if (!this.isDisposed) {
             this.stage.getViewport().getCamera().viewportWidth = width;
@@ -142,4 +190,13 @@ public class LevelUpUI implements UI {
         }
     }
     
+}
+
+/**
+ * UI interface implementation for LevelUpUI.
+ */
+interface UI {
+    void render();
+    void dispose();
+    void resize(int width, int height);
 }

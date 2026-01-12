@@ -11,12 +11,35 @@ import com.github.loganmidd.utils.MapPoint;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
-public class BFSPathfinding implements EnemyPathfinding {
+/**
+ * Implements the EnemyPathfinding interface using the Breadth-First Search (BFS)
+ * algorithm to calculate paths on a grid.
+ * <p>
+ * This class computes a path from a start point to one of several destination
+ * points, visualizes the path by adding entities to the world, and provides
+ * access to the calculated path and initial parameters.
+ */
+public class BFSPathfinding implements EnemyPathfindingStrategy {
+
+    /** The starting point for the pathfinding. */
     private MapPoint start;
+
+    /** The list of valid destination points. */
     private List<MapPoint> destinations;
+
+    /** The list of all traversable map points in the environment. */
     private List<MapPoint> mapPoints;
+
+    /** The calculated list of points representing the path from start to destination. */
     private List<MapPoint> path;
 
+    /**
+     * Constructs a BFSPathfinding instance, calculates the path, and visualizes it.
+     *
+     * @param mapPoints The list of all traversable map points.
+     * @param start The starting point for pathfinding.
+     * @param destinations The list of potential destination points.
+     */
     public BFSPathfinding(List<MapPoint> mapPoints, MapPoint start, List<MapPoint> destinations) {
         this.start = start;
         this.destinations = destinations;
@@ -34,6 +57,15 @@ public class BFSPathfinding implements EnemyPathfinding {
         }
     }
 
+    /**
+     * Identifies traversable neighboring points for a given point.
+     * <p>
+     * Checks the four cardinal directions (up, down, left, right) and returns
+     * only those neighbors that exist within the provided {@code mapPoints} list.
+     *
+     * @param p The point for which to find neighbors.
+     * @return A list of neighboring points.
+     */
     private List<MapPoint> getNeighbors(MapPoint p) {
         int x0 = p.getX();
         int y0 = p.getY();
@@ -53,6 +85,15 @@ public class BFSPathfinding implements EnemyPathfinding {
         return result;
     }
 
+    /**
+     * Calculates the path from the start point to the nearest destination
+     * using Breadth-First Search.
+     * <p>
+     * After finding the path via BFS parent tracking, it performs a cleanup
+     * step to remove intermediate points that create diagonals, simplifying the path.
+     *
+     * @return A list of map points representing the calculated path.
+     */
     private List<MapPoint> calculatePath() {
         MapPoint destination = this.start;
         HashMap<MapPoint, MapPoint> parents = new HashMap<>();
@@ -103,18 +144,40 @@ public class BFSPathfinding implements EnemyPathfinding {
         return path;
     }
 
+    /**
+     * Retrieves the start point.
+     *
+     * @return The start MapPoint.
+     */
     public MapPoint getStart() {
         return this.start;
     }
 
+    /**
+     * Retrieves the list of destination points.
+     *
+     * @return The list of destination MapPoints.
+     */
     public List<MapPoint> getDestinations() {
         return this.destinations;
     }
 
+    /**
+     * Retrieves the next point in the path.
+     * <p>
+     * Note: This implementation returns a new MapPoint(0,0) regardless of the current path state.
+     *
+     * @return A new MapPoint at coordinates (0,0).
+     */
     public MapPoint getNextPoint() {
         return new MapPoint(0,0);
     }
 
+    /**
+     * Retrieves the calculated path.
+     *
+     * @return The list of MapPoints representing the path.
+     */
     public List<MapPoint> getPath() {
         return this.path;
     }

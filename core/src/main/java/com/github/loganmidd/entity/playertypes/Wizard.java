@@ -8,10 +8,21 @@ import com.github.loganmidd.entity.towers.Tower;
 import com.github.loganmidd.entity.towers.WizardBlueTower;
 import com.github.loganmidd.world.World;
 
+/**
+ * Represents the Wizard player type, responsible for specific character attributes,
+ * attack behaviors, and associated tower types.
+ * 
+ * @author Logan Middendorf
+ */
 public class Wizard implements PlayerType {
     private Player host;
     private long startTime;
 
+    /**
+     * Constructs a Wizard and configures the host player's dimensions.
+     * 
+     * @param host The Player instance hosting this Wizard type.
+     */
     public Wizard(Player host) {
         this.host = host;
         float factor = 3f;
@@ -19,6 +30,9 @@ public class Wizard implements PlayerType {
         this.host.setWidth(26*factor);
     }
 
+    /**
+     * Performs the primary attack by firing a single projectile.
+     */
     public void primaryAttack() {
         float angle =  (float) Math.atan2(this.host.getDy(), this.host.getDx());
         WizardProjectile proj = new WizardProjectile(this.host, this.host.getCenterX(), this.host.getCenterY(), angle);
@@ -26,10 +40,16 @@ public class Wizard implements PlayerType {
         World.getWorld().addEntity(proj);
     }
 
+    /**
+     * Starts the timer for the secondary attack charge-up phase.
+     */
     public void startSecondaryAttack() {
         this.startTime = TimeUtils.millis();
     }
 
+    /**
+     * Ends the secondary attack and releases projectiles based on the charge duration.
+     */
     public void endSecondaryAttack() {
         float difference = (float) TimeUtils.timeSinceMillis(this.startTime) / 1000f;
         difference = Math.min(difference, 2); // 2 seconds max charge
@@ -53,14 +73,29 @@ public class Wizard implements PlayerType {
     }
 
 
+    /**
+     * Returns the texture path for the Wizard character.
+     * 
+     * @return The file path to the Wizard's texture.
+     */
     public String getTexturePath () {
         return "wizard.png";
     }
 
+    /**
+     * Returns the primary tower associated with the Wizard.
+     * 
+     * @return The primary Tower instance.
+     */
     public Tower getPrimaryTower() {
         return new WizardBlueTower(0, 0);
     }
 
+    /**
+     * Returns the secondary tower associated with the Wizard.
+     * 
+     * @return The secondary Tower instance.
+     */
     public Tower getSecondaryTower() {
         return new DeadlyStrikeTower(0, 0);
 

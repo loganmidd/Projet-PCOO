@@ -8,6 +8,15 @@ import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.utils.TextureRenderer;
 import com.github.loganmidd.world.World;
 
+/**
+ * Represents an entity in the game world.
+ * <p>
+ * This class serves as the base for all dynamic objects, handling position, movement,
+ * collision detection, and rendering responsibilities.
+ * </p>
+ *
+ * @author Logan Middendorf
+ */
 public abstract class Entity {
     private float x;
     private float y;
@@ -22,6 +31,12 @@ public abstract class Entity {
     private boolean isDisposed;
     private boolean isMovable;
     
+    /**
+     * Constructs an Entity at the specified coordinates.
+     *
+     * @param x The initial x-coordinate.
+     * @param y The initial y-coordinate.
+     */
     public Entity(float x, float y) {
         this.width = 50f;  // Arbitrary but
         this.height = 50f; // default value
@@ -35,6 +50,11 @@ public abstract class Entity {
         this.isMovable = true;
     }
 
+    /**
+     * Constructs an Entity at the location specified by a Point.
+     *
+     * @param p The point representing the initial position.
+     */
     public Entity(Point p) {
         this(p.getX(), p.getY());
     }
@@ -43,30 +63,168 @@ public abstract class Entity {
 ///                 Getters && Setters                  ///
 ///////////////////////////////////////////////////////////
 
+    /**
+     * Returns the x-coordinate of the entity.
+     *
+     * @return The x position.
+     */
     public float getX()      { return x; }
+
+    /**
+     * Returns the y-coordinate of the entity.
+     *
+     * @return The y position.
+     */
     public float getY()      { return y; }
+
+    /**
+     * Returns the x-axis velocity of the entity.
+     *
+     * @return The delta x value.
+     */
     public float getDx()     { return dx; }
+
+    /**
+     * Returns the y-axis velocity of the entity.
+     *
+     * @return The delta y value.
+     */
     public float getDy()     { return dy; } 
+
+    /**
+     * Returns the width of the entity.
+     *
+     * @return The width.
+     */
     public float getWidth()  { return this.width; }
+
+    /**
+     * Returns the height of the entity.
+     *
+     * @return The height.
+     */
     public float getHeight() { return this.height; }
+
+    /**
+     * Checks if the entity participates in collision detection.
+     *
+     * @return True if collision is enabled, false otherwise.
+     */
     public boolean hasCollision()    { return this.hasCollision; }
+
+    /**
+     * Returns the factor by which velocity decreases each tick.
+     *
+     * @return The slow down factor.
+     */
     public float getSlowDownFactor() { return this.slowDownFactor; }
+
+    /**
+     * Returns the file path to the texture used by this entity.
+     *
+     * @return The texture path string.
+     */
     public abstract String getTexturePath();
     
+    /**
+     * Calculates the center x-coordinate of the entity.
+     *
+     * @return The x-coordinate of the center.
+     */
     public float getCenterX() { return this.x + (this.width /2); }
+
+    /**
+     * Calculates the center y-coordinate of the entity.
+     *
+     * @return The y-coordinate of the center.
+     */
     public float getCenterY() { return this.y + (this.height/2); }
+
+    /**
+     * Returns a Point object representing the entity's top-left position.
+     *
+     * @return A new Point at the entity's position.
+     */
     public Point getPoint()   { return new Point(this.x, this.y); }
+
+    /**
+     * Returns a Point object representing the entity's geometric center.
+     *
+     * @return A new Point at the entity's center.
+     */
     public Point getCenterPoint() { return new Point(this.getCenterX(), this.getCenterY()); }
+
+    /**
+     * Returns the current hitbox of the entity.
+     *
+     * @return A Rectangle representing the current collision area.
+     */
     public Rectangle getHitbox() { return new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight()); }
+
+    /**
+     * Returns the projected hitbox of the entity based on its current velocity.
+     *
+     * @return A Rectangle representing the potential future collision area.
+     */
     public Rectangle getNextHitbox() { return new Rectangle(this.x - Math.abs(this.dx), this.y - Math.abs(this.dy), this.getWidth() + Math.abs(this.dx), this.getHeight() + Math.abs(this.dy)); }
+
+    /**
+     * Checks if the entity has been disposed.
+     *
+     * @return True if disposed, false otherwise.
+     */
     public boolean isDisposed() { return this.isDisposed; }
+
+    /**
+     * Checks if the entity is movable.
+     *
+     * @return True if movable, false otherwise.
+     */
     public boolean isMovable() { return this.isMovable; }
+
+    /**
+     * Checks if the entity is a combattant.
+     *
+     * @return Always returns false for the base class.
+     */
     public boolean isCombattant() { return false; }
+
+    /**
+     * Checks if the entity is the player.
+     *
+     * @return Always returns false for the base class.
+     */
     public boolean isPlayer() { return false; }
+
+    /**
+     * Checks if the entity is a tower.
+     *
+     * @return Always returns false for the base class.
+     */
     public boolean isTower() { return false; }
+
+    /**
+     * Checks if the entity is an enemy.
+     *
+     * @return Always returns false for the base class.
+     */
     public boolean isEnemy() { return false;}
+
+    /**
+     * Checks if the entity is a crystal.
+     *
+     * @return Always returns false for the base class.
+     */
     public boolean isCrystal() { return false; }
 
+    /**
+     * Returns the TextureRenderer used to draw this entity.
+     * <p>
+     * Lazily initializes the renderer if it does not exist.
+     * </p>
+     *
+     * @return The TextureRenderer instance.
+     */
     public TextureRenderer getTextureRenderer() { 
         if (this.renderer == null) {
             TextureRenderer t = new TextureRenderer(World.getWorld().getSpriteBatch());
@@ -76,16 +234,74 @@ public abstract class Entity {
         return this.renderer;
     }
 
+    /**
+     * Sets the x-coordinate of the entity.
+     *
+     * @param x The new x position.
+     */
     public void setX(float x)   { this.x = x; }
+
+    /**
+     * Sets the y-coordinate of the entity.
+     *
+     * @param y The new y position.
+     */
     public void setY(float y)   { this.y = y; }
+
+    /**
+     * Sets the x-axis velocity of the entity.
+     *
+     * @param dx The new delta x.
+     */
     public void setDx(float dx) { this.dx = dx; }
+
+    /**
+     * Sets the y-axis velocity of the entity.
+     *
+     * @param dy The new delta y.
+     */
     public void setDy(float dy) { this.dy = dy; }
+
+    /**
+     * Enables or disables collision detection for this entity.
+     *
+     * @param collision True to enable collision, false to disable.
+     */
     public void setCollision(boolean collision) { this.hasCollision = collision; }
+
+    /**
+     * Sets the slow down factor for movement.
+     *
+     * @param factor The new slow down factor.
+     */
     public void setSlowDownFactor(float factor) { this.slowDownFactor = factor;  }
+
+    /**
+     * Centers the entity horizontally at the specified x-coordinate.
+     *
+     * @param x The x-coordinate to center on.
+     */
     public void setCenterX(float x) { this.x = x - this.width /2f; }
+
+    /**
+     * Centers the entity vertically at the specified y-coordinate.
+     *
+     * @param y The y-coordinate to center on.
+     */
     public void setCenterY(float y) { this.y = y - this.height/2f; }
+
+    /**
+     * Sets the movable status of the entity.
+     *
+     * @param isMovable True to make the entity movable, false otherwise.
+     */
     public void setMovable(boolean isMovable) { this.isMovable = isMovable; }
     
+    /**
+     * Sets the width of the entity and updates the renderer if present.
+     *
+     * @param width The new width.
+     */
     public void setWidth(float width)   { 
         this.width = width; 
         if (this.renderer != null) {
@@ -93,6 +309,11 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Sets the height of the entity and updates the renderer if present.
+     *
+     * @param height The new height.
+     */
     public void setHeight(float height) { 
         this.height = height; 
         if (this.renderer != null) {
@@ -100,19 +321,42 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Sets the TextureRenderer for this entity and syncs its dimensions.
+     *
+     * @param textureRenderer The renderer to use.
+     */
     public void setRenderer(TextureRenderer textureRenderer) {
         this.renderer = textureRenderer;
         this.renderer.setHeight((int) this.getHeight());
         this.renderer.setWidth((int) this.getWidth());
     }
 
+    /**
+     * Adds value to the x-axis velocity.
+     *
+     * @param dx The amount to add to dx.
+     */
     public void addDx(float dx) { this.dx += dx; }
+
+    /**
+     * Adds value to the y-axis velocity.
+     *
+     * @param dy The amount to add to dy.
+     */
     public void addDy(float dy) { this.dy += dy; }
 
 ///////////////////////////////////////////////////////////
 ///                       Logic                         ///
 ///////////////////////////////////////////////////////////
 
+    /**
+     * Executes the entity's logic for the current tick.
+     * <p>
+     * Handles collision detection with blocks and other entities, calculates repulsion forces,
+     * resolves physical collisions, and updates position based on velocity.
+     * </p>
+     */
     public void logic() {
         if (this.isDisposed) {
             return;
@@ -268,6 +512,12 @@ public abstract class Entity {
         this.dy *= this.slowDownFactor;
     }
 
+    /**
+     * Checks for collisions between this entity and a list of blocks.
+     *
+     * @param blocks The list of blocks to check against.
+     * @return A list of blocks that are colliding with this entity.
+     */
     public List<Block> blockCollision(List<Block> blocks) {
         List<Block> collisions = new ArrayList<>();
 
@@ -295,6 +545,15 @@ public abstract class Entity {
         return collisions;
     }
 
+    /**
+     * Determines the effective collision height for a specific block.
+     * <p>
+     * Allows for partial collision (e.g., for terrain) if the block does not have true collision.
+     * </p>
+     *
+     * @param block The block to check.
+     * @return The height to use for collision detection.
+     */
     public float getCollisionHeightForBlock(Block block) {
         if (block.hasTrueCollision()) {
             return this.height;
@@ -303,14 +562,32 @@ public abstract class Entity {
         }
     }
     
+    /**
+     * Marks the entity as disposed.
+     * <p>
+     * A disposed entity will be skipped in logic updates and rendering.
+     * </p>
+     */
     public void dispose() {
         this.isDisposed = true;
     } 
 
+    /**
+     * Checks if this entity overlaps with another entity.
+     *
+     * @param other The other entity to check.
+     * @return True if hitboxes overlap and neither is disposed, false otherwise.
+     */
     public boolean collidesWith(Entity other) {
         return other.getHitbox().overlaps(this.getHitbox()) && !this.isDisposed;
     }
 
+    /**
+     * Renders the entity using its TextureRenderer.
+     * <p>
+     * Does nothing if the entity is disposed.
+     * </p>
+     */
     public void render() {
         if (!this.isDisposed) {
             this.getTextureRenderer().renderAt(x, y);

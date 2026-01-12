@@ -18,6 +18,15 @@ import com.github.loganmidd.utils.MapPoint;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.world.World;
 
+/**
+ * Represents a map loaded from a Tiled file.
+ * <p>
+ * This class handles loading the map, parsing its layers for collision data
+ * (blocks), spawn points, and enemy path points, and managing the rendering process.
+ * </p>
+ *
+ * @author Logan Middendorf
+ */
 public class TMap implements Disposable {
     private String path;
     private TiledMap map;
@@ -31,10 +40,22 @@ public class TMap implements Disposable {
     private List<Point> enemySpawnPoints;
     private List<Point> enemyPathPoints;
 
+    /**
+     * Constructs a TMap and initializes it with the specified file path and camera.
+     *
+     * @param filePath The path to the Tiled map file to load.
+     * @param cam      The OrthographicCamera used for rendering the map.
+     */
     public TMap(String filePath, OrthographicCamera cam) {
         init(filePath, cam); // To be able to re-initialize later
     }
 
+    /**
+     * Initializes or re-initializes the map with the specified file path and camera.
+     *
+     * @param filePath The path to the Tiled map file to load.
+     * @param cam      The OrthographicCamera used for rendering the map.
+     */
     public void init(String filePath, OrthographicCamera cam) {
         this.path = filePath;
         this.map = new TmxMapLoader().load(filePath);
@@ -53,6 +74,13 @@ public class TMap implements Disposable {
 
     }
 
+    /**
+     * Loads traversability data from the map.
+     * <p>
+     * Iterates through tile layers to identify non-traversable tiles, creating blocks for them.
+     * It also checks object layers for rectangles defined as non-traversable and adds those as blocks.
+     * </p>
+     */
     private void loadTraversabilityWalls() {
         int width = this.firstLayer.getTileWidth();
         int height = this.firstLayer.getTileHeight();
@@ -91,6 +119,13 @@ public class TMap implements Disposable {
         }
     }
 
+    /**
+     * Loads spawn points from the map.
+     * <p>
+     * Searches for layers with a "spawn" property and identifies specific spawn points
+     * for the player, crystals, and enemies based on the object name.
+     * </p>
+     */
     private void loadSpawnPoints() {
         float unitScale = this.renderer.getUnitScale();
         MapLayers layers = this.map.getLayers();
@@ -123,6 +158,13 @@ public class TMap implements Disposable {
         }
     }
 
+    /**
+     * Loads enemy path points from the map.
+     * <p>
+     * Searches for layers with an "enemypath" property and extracts coordinates
+     * from rectangle objects within those layers.
+     * </p>
+     */
     private void loadEnemyPathPoints() {
         for (MapLayer layer : TMapUtils.getMapLayersWithProperty(this.map.getLayers(), "enemypath")) {
             for (MapObject obj : layer.getObjects()) {
@@ -136,6 +178,13 @@ public class TMap implements Disposable {
         }
     }
 
+    /**
+     * Calculates the world coordinates of a specific tile based on its grid coordinates.
+     *
+     * @param x The x-coordinate of the tile in the grid.
+     * @param y The y-coordinate of the tile in the grid.
+     * @return A Point representing the world coordinates of the tile.
+     */
     public Point getCoordinatesOfTile(int x, int y) {
         float topRightX = this.renderer.getTopLeftCornerX();
         float topRightY = this.renderer.getTopLeftCornerY();
@@ -149,42 +198,88 @@ public class TMap implements Disposable {
     } 
 
 
+    /**
+     * Renders the map.
+     */
     public void render() {
         this.renderer.render();
     }
 
+    /**
+     * Gets the file path of the map.
+     *
+     * @return The file path string.
+     */
     public String getPath() {
         return this.path;
     }
 
+    /**
+     * Gets the spawn point for the player.
+     *
+     * @return The player spawn Point.
+     */
     public Point getPlayerSpawnPoint() {
         return this.playerSpawnPoint;
     }
 
+    /**
+     * Gets the list of spawn points for crystals.
+     *
+     * @return A List of Points representing crystal spawn locations.
+     */
     public List<Point> getCrystalSpawnPoints() {
         return this.crystalSpawnPoints;
     }
 
+    /**
+     * Gets the list of spawn points for enemies.
+     *
+     * @return A List of Points representing enemy spawn locations.
+     */
     public List<Point> getEnemySpawnPoints() {
         return this.enemySpawnPoints;
     }
 
+    /**
+     * Gets the list of traversable cases (grid coordinates).
+     *
+     * @return A List of MapPoints representing traversable grid locations.
+     */
     public List<MapPoint> getTraversableCases() {
         return this.traversableCases;
     }
 
+    /**
+     * Gets the list of path points for enemies.
+     *
+     * @return A List of Points representing the enemy patrol path.
+     */
     public List<Point> getEnemyPathPoints() {
         return this.enemyPathPoints;
     }
 
+    /**
+     * Disposes of resources used by the map.
+     */
     public void dispose() {
         this.renderer.dispose();
     }
 
+    /**
+     * Gets the width of the map in tiles.
+     *
+     * @return The map width in tiles.
+     */
     public int getWidth() {
         return this.firstLayer.getWidth();
     }
 
+    /**
+     * Gets the height of the map in tiles.
+     *
+     * @return The map height in tiles.
+     */
     public int getHeight() {
         return this.firstLayer.getHeight();
     }

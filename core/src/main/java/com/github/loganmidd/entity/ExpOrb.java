@@ -43,6 +43,6 @@ public class ExpOrb extends Entity {
     }
 
     public String getTexturePath() {
-        return "spriteNotFound.png";
+        return "expOrb.png";
     }
 }

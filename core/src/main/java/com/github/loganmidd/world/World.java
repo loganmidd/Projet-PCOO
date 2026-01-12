@@ -25,6 +25,11 @@ import com.github.loganmidd.ui.PlayerHUD;
 import com.github.loganmidd.utils.Point;
 import com.github.loganmidd.waves.WaveManager;
 
+/**
+ * Manages the game world, including entities, blocks, the camera, map rendering, and game logic updates.
+ * 
+ * @author Logan Middendorf
+ */
 public final class World implements Disposable {
     private int frameNumber;
     private List<Block> blocks;
@@ -44,6 +49,10 @@ public final class World implements Disposable {
     private WaveManager manager;
     private Game game;
 
+    /**
+     * Private constructor to enforce the singleton pattern.
+     * Initializes lists, the SpriteBatch, Camera, and ShapeRenderer.
+     */
     private World() {
         this.blocks = new ArrayList<>();
         this.blocksToAdd = new ArrayList<>();
@@ -61,6 +70,12 @@ public final class World implements Disposable {
         this.manager = new WaveManager();
     }
 
+    /**
+     * Retrieves the singleton instance of the World.
+     * Initializes the instance if it has not been created yet.
+     *
+     * @return The single instance of World.
+     */
     public static World getWorld() {
         if (!isInitialized) {
             isInitialized = true;
@@ -73,16 +88,81 @@ public final class World implements Disposable {
 ///                 Getters && Setters (etc)            ///
 ///////////////////////////////////////////////////////////
 
+    /**
+     * Retrieves the list of blocks in the world.
+     *
+     * @return The list of Block objects.
+     */
     public List<Block>    getBlocks()        { return this.blocks; }
+
+    /**
+     * Retrieves the list of entities in the world.
+     *
+     * @return The list of Entity objects.
+     */
     public List<Entity>   getEntities()      { return this.entities; }
+
+    /**
+     * Retrieves the camera used for viewing the world.
+     *
+     * @return The Camera object.
+     */
     public Camera         getCamera()        { return this.camera; }
+
+    /**
+     * Retrieves the ShapeRenderer used for drawing geometric shapes.
+     *
+     * @return The ShapeRenderer object.
+     */
     public ShapeRenderer  getShapeRenderer() { return this.shapeRenderer; }
+
+    /**
+     * Retrieves the SpriteBatch used for rendering sprites.
+     *
+     * @return The SpriteBatch object.
+     */
     public SpriteBatch    getSpriteBatch()   { return this.spriteBatch; }
+
+    /**
+     * Retrieves the tiled map associated with the world.
+     *
+     * @return The TMap object.
+     */
     public TMap           getTMap()          { return this.tMap; }
+
+    /**
+     * Retrieves the enemy paths defined by the tiled map.
+     *
+     * @return The TMapEnemyPaths object.
+     */
     public TMapEnemyPaths getEnemyPaths()    { return this.paths; }
+
+    /**
+     * Retrieves the current frame number.
+     *
+     * @return The frame number (tick count).
+     */
     public int            getFrameNumber()   { return this.frameNumber; }
+
+    /**
+     * Retrieves the WaveManager responsible for handling enemy waves.
+     *
+     * @return The WaveManager object.
+     */
     public WaveManager    getWaveManager()   { return this.manager; }
+
+    /**
+     * Retrieves the Game instance associated with the world.
+     *
+     * @return The Game object.
+     */
     public Game           getGame()          { return this.game; }
+
+    /**
+     * Counts the number of active enemy entities in the world.
+     *
+     * @return The count of enemies.
+     */
     public int            getEnemyCount() {
         int count = 0;
         for (Entity entity : this.entities) {
@@ -93,9 +173,23 @@ public final class World implements Disposable {
         return count;
     }
     
+    /**
+     * Adds a block to the world.
+     * The block is added to a staging list and will be processed in the next logic update.
+     *
+     * @param block The Block to add.
+     */
     public void addBlock(Block block) { 
         blocks.add(block);
     }
+
+    /**
+     * Adds an entity to the world.
+     * The entity is added to a staging list and will be processed in the next logic update.
+     * If the entity is an enemy, its path is initialized.
+     *
+     * @param entity The Entity to add.
+     */
     public void addEntity(Entity entity) { 
         this.entitiesToAdd.add(entity); 
 
@@ -105,18 +199,51 @@ public final class World implements Disposable {
         }
     }
 
+    /**
+     * Removes a block from the world immediately.
+     *
+     * @param block The Block to remove.
+     */
     public void removeBlock(Block block)    { this.blocks.remove(block); this.blocksToAdd.remove(block); }
+
+    /**
+     * Removes an entity from the world immediately.
+     *
+     * @param entity The Entity to remove.
+     */
     public void removeEntity(Entity entity) { this.entities.remove(entity); this.entitiesToAdd.remove(entity); }
     
+    /**
+     * Sets a new camera for the world.
+     *
+     * @param newCamera The new OrthographicCamera.
+     */
     public void setCamera(OrthographicCamera newCamera)    { this.camera = newCamera; }
+
+    /**
+     * Sets a new SpriteBatch for rendering.
+     *
+     * @param newSpriteBatch The new SpriteBatch.
+     */
     public void setSpriteBatch(SpriteBatch newSpriteBatch) { this.spriteBatch = newSpriteBatch; }
+
+    /**
+     * Sets the Game instance and updates the WaveManager's reference to it.
+     *
+     * @param game The Game instance.
+     */
     public void setGame(Game game) { this.game = game; this.getWaveManager().setGame(game); }
 
 ///////////////////////////////////////////////////////////
 ///                        Logic                        ///
 ///////////////////////////////////////////////////////////
 
-
+    /**
+     * Executes the main logic loop for the world.
+     * Updates the frame count, processes pending block and entity additions, executes logic for all objects,
+     * updates the camera position to follow the player, manages the PlayerHUD, disposes of out-of-bounds entities,
+     * removes disposed entities, and advances the wave manager logic.
+     */
     public void logic() {
         this.frameNumber++;
         this.blocks.addAll(this.blocksToAdd);
@@ -163,6 +290,10 @@ public final class World implements Disposable {
         this.manager.logic();
     }
 
+    /**
+     * Handles input processing for the player entity.
+     * Iterates through entities to find the Player and calls its input method.
+     */
     public void input() {
         for (Entity entity : new ArrayList<>(this.entities)) {
             if (entity.getClass().equals(Player.class)) {
@@ -172,6 +303,10 @@ public final class World implements Disposable {
         }
     }
 
+    /**
+     * Renders the world environment and UI elements.
+     * Updates the camera, sets the projection matrix, renders the tiled map, and renders the LevelUpUI and PlayerHUD if active.
+     */
     public void render() {
         this.camera.update();
         this.spriteBatch.setProjectionMatrix(this.camera.combined);
@@ -184,6 +319,11 @@ public final class World implements Disposable {
         }
     }
 
+    /**
+     * Renders all entities in the world.
+     * Sorts entities by their Y-coordinate (from top to bottom) to ensure correct rendering order (painter's algorithm),
+     * then renders each entity.
+     */
     public void renderEntities() {
         this.spriteBatch.begin();
         this.entities.sort(new Comparator<Entity>() {
@@ -202,10 +342,20 @@ public final class World implements Disposable {
 
     }
 
+    /**
+     * Checks if the current wave has ended.
+     * A wave is considered over if there are no enemies remaining in the world.
+     *
+     * @return True if the enemy count is zero, false otherwise.
+     */
     public boolean isWaveOver() {
         return this.getEnemyCount() == 0;
     }
     
+    /**
+     * Disposes of all resources held by the world.
+     * Disposes of all entities, the SpriteBatch, the Tiled Map, and the LevelUpUI.
+     */
     public void dispose() {
         for (Entity entity : this.entities) {
             entity.dispose();
@@ -218,6 +368,13 @@ public final class World implements Disposable {
         }
     }
 
+    /**
+     * Handles window resize events.
+     * Adjusts the camera viewport to maintain aspect ratio and resizes UI components.
+     *
+     * @param width  The new window width.
+     * @param height The new window height.
+     */
     public void resize(int width, int height) {
         this.camera.viewportWidth = zoomFactor;
         this.camera.viewportHeight = zoomFactor * height/width;
@@ -232,6 +389,12 @@ public final class World implements Disposable {
         }
     }
 
+    /**
+     * Loads a Tiled map from the specified file path.
+     * Initializes the TMap, adds the Player at the spawn point, adds Crystals at their spawn points, and initializes enemy paths.
+     *
+     * @param filePath The path to the Tiled map file.
+     */
     public void loadTiledMap(String filePath) {
         this.tMap = new TMap(filePath, camera); 
         this.addEntity(new Player(this.tMap.getPlayerSpawnPoint()));
@@ -245,6 +408,12 @@ public final class World implements Disposable {
         this.paths = new TMapEnemyPaths();
     }
 
+    /**
+     * Creates the LevelUpUI for the specified player.
+     * Randomly selects 3 unique PlayerEffect upgrades based on their current weightings.
+     *
+     * @param player The Player instance to associate with the UI.
+     */
     public void createLevelUpUI(Player player) {
         this.levelUpUI = new LevelUpUI(player);
         int upgradeChoiceCount = 3;
